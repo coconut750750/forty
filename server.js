@@ -21,6 +21,35 @@ app.post('/api/create', (req, res) => {
   });
 });
 
+app.get('/api/checkname', (req, res) => {
+  const { name } = req.query;
+  if (name.length < 2 || name.length > 12) {
+    res.send({ valid: false, message: 'Your name must be between 2 and 12 characters long' });
+    return;
+  }
+
+  const { gameCode } = req.query;
+  if (gameCode != undefined) {
+    const game = app.forty.retrieveGame(gameCode);
+    if (game.playerExists(name)) {
+      res.send({ valid: false, message: 'This name has been taken' });
+      return;
+    }
+  }
+
+  res.send({ valid: true });
+});
+
+app.get('/api/checkcode', (req, res) => {
+  const { gameCode } = req.query;
+  const game = app.forty.retrieveGame(gameCode);
+  if (game != undefined) {
+    res.send({ valid: true });
+  } else {
+    res.send({ valid: false, message: 'This game code is invalid' })
+  }
+})
+
 app.io.of('/lobby').on('connect', function (socket) {
   var game;
   var name;

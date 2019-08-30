@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
 
+import './Lobby.css';
+
 class Lobby extends Component {
   constructor(props) {
     super(props);
@@ -33,26 +35,15 @@ class Lobby extends Component {
     return (
       <div>
         <p>Lobby</p>
-        <p>Game code: {this.props.gameCode}</p>
+        <p>Game code: <span id="gamecode" class="badge badge-secondary badge-light">{this.props.gameCode}</span></p>
         
         <br/>
 
         <p>Players</p>
         <div className="d-flex justify-content-center">
-          <div className="col-3 p-3">
-            {this.state.players[0] || ""}
-          </div>
-          <div className="col-3 p-3">
-            {this.state.players[1] || ""}
-          </div>
-        </div>
-        <div className="d-flex justify-content-center">
-          <div className="col-3 p-3">
-            {this.state.players[2] || ""}
-          </div>
-          <div className="col-3 p-3">
-            {this.state.players[3] || ""}
-          </div>
+          {this.state.players.map( playerName => (
+            <div class="badge badge-secondary badge-dark m-3">{ playerName }</div>
+          ))}
         </div>
 
         <br/>

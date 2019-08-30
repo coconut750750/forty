@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { createGame } from 'api/register';
-import { callApi } from 'api/utils';
 
 import Home from 'views/Home';
 import Create from 'views/Create';
@@ -53,9 +52,6 @@ class App extends React.Component {
         <div className="container" style={{ maxWidth: "500px" }}>
           <div>
             Forty
-          </div>
-          <div onClick={ () => callApi('/api/code').then(res => this.setState({ message: res.code })) }>
-            {this.state.message}
           </div>
 
           <hr/>
