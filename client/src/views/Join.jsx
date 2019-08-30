@@ -9,7 +9,7 @@ class Join extends Component {
       gameCode: '',
       name: '',
       message: undefined,
-    }
+    };
   }
 
   async joinGame() {

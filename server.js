@@ -35,6 +35,10 @@ app.get('/api/checkname', (req, res) => {
       res.send({ valid: false, message: 'This name has been taken' });
       return;
     }
+    if (game.isFull()) {
+      res.send({ valid: false, message: 'This game is full' });
+      return;
+    }
   }
 
   res.send({ valid: true });
@@ -60,7 +64,6 @@ app.io.of('/lobby').on('connect', function (socket) {
     game = app.forty.retrieveGame(gameCode);
 
     game.addPlayer(name, socket);
-    console.log(app.forty);
   });
 
   socket.on('disconnect', data => {

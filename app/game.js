@@ -1,6 +1,8 @@
 var _ = require('lodash');
 var Player = require('./player');
 
+const MAX_PLAYERS = 4;
+
 class Game {
   constructor(code, onEnd) {
     this.code = code;
@@ -23,6 +25,10 @@ class Game {
       this.endGame();
     }
     this.notifyPlayerChange();
+  }
+
+  isFull() {
+    return this.players.length >= MAX_PLAYERS;
   }
 
   notifyPlayerChange() {
