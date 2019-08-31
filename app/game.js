@@ -38,9 +38,7 @@ class Game {
   }
 
   endGame() {
-    this.players.forEach(player => {
-      player.send('endGame', {});
-    });
+    this.players.forEach(player => player.send('endGame', {}));
     this.onEnd();
   }
 }

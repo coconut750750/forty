@@ -60,8 +60,7 @@ app.io.of('/lobby').on('connect', function (socket) {
 
   socket.on('join', data => {
     name = data.name;
-    const gameCode = data.gameCode;
-    game = app.forty.retrieveGame(gameCode);
+    game = app.forty.retrieveGame(data.gameCode);
 
     game.addPlayer(name, socket);
   });
@@ -72,8 +71,11 @@ app.io.of('/lobby').on('connect', function (socket) {
 });
 
 app.io.of('/table').on('connect', function (socket) {
-  // socket.emit('news', { hello: 'world' });
-  // socket.on('asdf', function (data) {
-  //   console.log(data);
-  // });
+  var game;
+  var name;
+
+  socket.on('enter', data => {
+    name = data.name;
+    game = app.forty.retrieveGame(data.gameCode);
+  })
 });
