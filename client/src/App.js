@@ -1,4 +1,5 @@
 import React from 'react';
+import io from 'socket.io-client';
 
 import { createGame } from 'api/register';
 
@@ -22,6 +23,8 @@ class App extends React.Component {
   }
 
   setGame(gameCode, name) {
+    this.socket = io('http://localhost:5000');
+    
     this.setState({
       viewState: "lobby",
       gameCode,
@@ -43,7 +46,8 @@ class App extends React.Component {
       lobby:  <Lobby
                 onEnd={ () => this.setState({ viewState: "home" }) }
                 gameCode={this.state.gameCode}
-                name={this.state.name}/>,
+                name={this.state.name}
+                socket={this.socket}/>,
       table:  <Table/>,
     }
 

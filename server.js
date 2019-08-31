@@ -54,7 +54,7 @@ app.get('/api/checkcode', (req, res) => {
   }
 })
 
-app.io.of('/lobby').on('connect', function (socket) {
+app.io.on('connect', function (socket) {
   var game;
   var name;
 
@@ -67,15 +67,5 @@ app.io.of('/lobby').on('connect', function (socket) {
 
   socket.on('disconnect', data => {
     game.removePlayer(name);
-  });
-});
-
-app.io.of('/table').on('connect', function (socket) {
-  var game;
-  var name;
-
-  socket.on('enter', data => {
-    name = data.name;
-    game = app.forty.retrieveGame(data.gameCode);
   });
 });

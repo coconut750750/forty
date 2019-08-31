@@ -9,7 +9,16 @@ class Player {
   }
 
   possibleCards(leadCard) {
-    
+    var cardsInFamily = [];
+    for (var card of this.hand) {
+      if (card.family === leadCard.family) {
+        cardsInFamily.push(card);
+      }
+    }
+    if (cardsInFamily.length === 0) {
+      return this.hand
+    }
+    return cardsInFamily;
   }
 
   send(event, data) {

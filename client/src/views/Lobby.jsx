@@ -9,25 +9,21 @@ class Lobby extends Component {
     this.state = {
       players: [],
     };
-
-    this.socket = io('http://localhost:5000/lobby');
   }
 
   componentDidMount() {
-    this.socket.on('connect', () => {
-      this.socket.emit('join', { name: this.props.name, gameCode: this.props.gameCode });
-      this.socket.on('updateLobby', data => {
-        this.setState({ players: data.players });
-      });
-
-      this.socket.on('endGame', data => {
-        this.leaveGame();
-      })
+    this.props.socket.emit('join', { name: this.props.name, gameCode: this.props.gameCode });
+    this.props.socket.on('updateLobby', data => {
+      this.setState({ players: data.players });
     });
+
+    this.props.socket.on('endGame', data => {
+      this.leaveGame();
+    })
   }
 
   leaveGame() {
-    this.socket.disconnect();
+    this.props.socket.disconnect();
     this.props.onEnd();
   }
 
