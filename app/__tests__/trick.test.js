@@ -1,14 +1,22 @@
 var Card = require('../card');
 var Trick = require('../trick');
 
-function determineWinner(trumpCard, cards) {
+function createTrick(trumpCard, cards) {
   trumpCard.calibrate(trumpCard);
   var trick = new Trick();
   for (var card of cards) {
     card.calibrate(trumpCard);
     trick.addCard(card);
   }
-  return trick.determineWinnerPosition(trumpCard);
+  return trick;
+}
+
+function determineWinner(trumpCard, cards) {
+  return createTrick(trumpCard, cards).determineWinnerPosition(trumpCard);
+}
+
+function calculatePoints(trumpCard, cards) {
+  return createTrick(trumpCard, cards).calculatePoints();
 }
 
 describe('test determine winner position', () => {
@@ -111,3 +119,41 @@ describe('test determine winner position', () => {
     ])).toBe(2);
   });
 });
+
+describe('test calculating total points', () => {
+  it('no points in trick', () => {
+    expect(calculatePoints(new Card('2', 's'), [
+      new Card('a', 'h'), 
+      new Card('q', 'h'), 
+      new Card('j', 'h'), 
+      new Card('3', 'h')
+    ])).toBe(0);
+  });
+
+  it('5 points in trick', () => {
+    expect(calculatePoints(new Card('2', 's'), [
+      new Card('a', 'h'), 
+      new Card('q', 'h'), 
+      new Card('j', 'h'), 
+      new Card('5', 'h')
+    ])).toBe(5);
+  });
+
+  it('25 points in trick', () => {
+    expect(calculatePoints(new Card('2', 's'), [
+      new Card('a', 'h'), 
+      new Card('k', 'h'), 
+      new Card('0', 'h'), 
+      new Card('5', 'h')
+    ])).toBe(25);
+  });
+
+  it('trump card points in trick', () => {
+    expect(calculatePoints(new Card('5', 's'), [
+      new Card('a', 'h'), 
+      new Card('4', 'h'), 
+      new Card('8', 'h'), 
+      new Card('5', 'h')
+    ])).toBe(5);
+  });
+})

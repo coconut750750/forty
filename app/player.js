@@ -1,4 +1,4 @@
-
+var Card = require('./card');
 
 class Player {
   constructor(name, socket, isAdmin) {
@@ -6,6 +6,10 @@ class Player {
     this.socket = socket;
     this.isAdmin = isAdmin;
     this.hand = [];
+  }
+
+  possibleCards(leadCard) {
+    
   }
 
   send(event, data) {

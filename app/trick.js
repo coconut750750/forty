@@ -21,10 +21,21 @@ class Trick {
         leadValue = value;
         position = i;
       }
-      
     }
 
     return position;
+  }
+
+  calculatePoints() {
+    var points = 0;
+    for (var card of this.cards) {
+      if (card.rank == '5') {
+        points += 5;
+      } else if (card.rank == '0' || card.rank == 'k') {
+        points += 10;
+      }
+    }
+    return points;
   }
 }
 

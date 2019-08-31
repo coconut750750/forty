@@ -77,5 +77,5 @@ app.io.of('/table').on('connect', function (socket) {
   socket.on('enter', data => {
     name = data.name;
     game = app.forty.retrieveGame(data.gameCode);
-  })
+  });
 });
