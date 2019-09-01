@@ -4,7 +4,7 @@ var Player = require('./player');
 var { newDeck, calibrate } = require('./deckutils');
 
 const MAX_PLAYERS = 4;
-const PHASES = ['teams'];
+const PHASES = ['teams', 'deal'];
 
 class Game {
   constructor(code, onEnd) {
@@ -57,15 +57,6 @@ class Game {
     return this.players.length >= MAX_PLAYERS;
   }
 
-  permute() {
-    this.players = [this.players[0], ...this.players.slice(2, MAX_PLAYERS), this.players[1]];
-    this.notifyPlayerChange();
-  }
-
-  notifyPlayerChange() {
-    this.players.forEach(player => player.send('players', this.getPlayerData()));
-  }
-
   getPlayerData() {
     return { players: this.players.map(p => p.json()) };
   }
@@ -76,20 +67,31 @@ class Game {
     this.notifyGameStart();
   }
 
+  permute() {
+    this.players = [this.players[0], ...this.players.slice(2, MAX_PLAYERS), this.players[1]];
+    this.notifyPlayerChange();
+  }
+
   startRound() {
     this.deck = newDeck();
     this.trumpCard = undefined;
     this.dealsLeft = 48;
+    this.phase = PHASES[1];
+    this.notifyPhaseChange();
   }
 
   startDeal() {
     this.actionIndex = 0;
+    this.notifyActionPlayer();
   }
 
   deal(name) {
     if (this.players[this.actionIndex].name === name && this.dealsLeft > 0) {
       this.players[this.actionIndex].addCard(this.deck.pop());
+      this.players[this.actionIndex].sendHand();
+
       this.actionIndex = (this.actionIndex + 1) % MAX_PLAYERS;
+      this.notifyActionPlayer();
       this.dealsLeft--;
     }
   }
@@ -104,8 +106,20 @@ class Game {
     this.players.forEach(player => calibrate(player.hand, trumpCard));
   }
 
+  notifyPlayerChange() {
+    this.players.forEach(player => player.send('players', this.getPlayerData()));
+  }
+
   notifyGameStart() {
     this.players.forEach(player => player.send('start', {}));
+  }
+
+  notifyPhaseChange() {
+    this.players.forEach(player => player.send('phase', { phase: this.phase }));
+  }
+
+  notifyActionPlayer() {
+    this.players[this.actionIndex].send('action', {});
   }
 
   endGame() {

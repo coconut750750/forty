@@ -44,6 +44,10 @@ class Player {
       this.socket.emit(event, data);
     }
   }
+
+  sendHand() {
+    this.send('hand', { hand: this.hand.map(card => card.json()) });
+  }
 }
 
 module.exports = Player;

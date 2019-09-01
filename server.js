@@ -78,7 +78,7 @@ app.io.on('connect', function (socket) {
 
   socket.on('getPlayers', data => {
     socket.emit('players', game.getPlayerData());
-  })
+  });
 
   socket.on('startGame', data => {
     if (game.isFull()) {
@@ -94,6 +94,15 @@ app.io.on('connect', function (socket) {
 
   socket.on('permutePlayers', data => {
     game.permute();
+  });
+
+  socket.on('confirmTeams', data => {
+    game.startRound();
+    game.startDeal();
+  });
+
+  socket.on('draw', data => {
+    game.deal(name);
   });
 
   socket.on('disconnect', data => {
