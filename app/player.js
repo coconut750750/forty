@@ -40,7 +40,9 @@ class Player {
   }
 
   send(event, data) {
-    this.socket.emit(event, data);
+    if (this.socket != undefined) {
+      this.socket.emit(event, data);
+    }
   }
 }
 

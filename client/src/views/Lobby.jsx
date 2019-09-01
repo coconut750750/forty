@@ -23,15 +23,6 @@ class Lobby extends Component {
     this.props.socket.on('startFail', data => {
       this.setState({ message: data.message });
     });
-
-    this.props.socket.on('endGame', data => {
-      this.leaveGame();
-    });
-  }
-
-  leaveGame() {
-    this.props.socket.disconnect();
-    this.props.endGame();
   }
 
   render() {
@@ -47,8 +38,8 @@ class Lobby extends Component {
 
         <br/>
 
-        <button type="button" className="btn btn-light" onClick={ () => this.leaveGame() }>Leave Game</button>
-        <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('start') }>Start Game</button>
+        <button type="button" className="btn btn-light" onClick={ () => this.props.leaveGame() }>Leave Game</button>
+        <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('startGame') }>Start Game</button>
 
         <br/>
         {this.state.message && <div class="alert alert-danger" role="alert">

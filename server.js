@@ -6,12 +6,13 @@ var bodyParser = require('body-parser');
 const Forty = require('./app/forty');
 
 const port = process.env.PORT || 5000;
+const dev = process.env.NODE_ENV === 'dev';
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
 
 app.use(bodyParser.json());
 app.io = io;
-app.forty = new Forty();
+app.forty = new Forty(dev);
 
 app.post('/api/create', (req, res) => {
   const game = app.forty.createGame();
@@ -68,7 +69,7 @@ app.io.on('connect', function (socket) {
 
     if (game.started) {
       game.activatePlayer(name);
-      socket.emit('startGame', {});
+      socket.emit('start', {});
     } else {
       game.addPlayer(name, socket);
     }
@@ -79,12 +80,16 @@ app.io.on('connect', function (socket) {
     socket.emit('players', game.getPlayerData());
   })
 
-  socket.on('start', data => {
+  socket.on('startGame', data => {
     if (game.isFull()) {
       game.start();
     } else {
       socket.emit('startFail', { message: 'Not enough players have joined the game' });
     }
+  });
+
+  socket.on('getPhase', data => {
+    socket.emit('phase', { phase: game.phase });
   });
 
   socket.on('permutePlayers', data => {

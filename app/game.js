@@ -58,7 +58,7 @@ class Game {
   }
 
   permute() {
-    this.players = [this.players[0]] + this.players.slice(2, MAX_PLAYERS) + [this.players[1]];
+    this.players = [this.players[0], ...this.players.slice(2, MAX_PLAYERS), this.players[1]];
     this.notifyPlayerChange();
   }
 
@@ -105,11 +105,11 @@ class Game {
   }
 
   notifyGameStart() {
-    this.players.forEach(player => player.send('startGame', {}));
+    this.players.forEach(player => player.send('start', {}));
   }
 
   endGame() {
-    this.players.forEach(player => player.send('endGame', {}));
+    this.players.forEach(player => player.send('end', {}));
     this.onEnd();
   }
 }

@@ -11,7 +11,7 @@ export async function checkCode(gameCode) {
 }
 
 export async function checkName(name, gameCode) {
-  if (gameCode != undefined) {
+  if (gameCode !== undefined) {
     return callApi(`api/checkname?gameCode=${gameCode}&name=${name}`);
   } else {
     return callApi(`api/checkname?name=${name}`);
