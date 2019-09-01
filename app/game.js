@@ -101,7 +101,7 @@ class Game {
   setTrumpCard(trumpCard) {
     this.trumpCard = trumpCard;
     calibrate(this.deck, trumpCard);
-    this.player.forEach(player => calibrate(player.hand, trumpCard));
+    this.players.forEach(player => calibrate(player.hand, trumpCard));
   }
 
   notifyGameStart() {
