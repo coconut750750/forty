@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import './PlayerList.css';
-
 class PlayerList extends Component {
   constructor(props) {
     super(props);
