@@ -24,6 +24,9 @@ class App extends React.Component {
 
   setGame(gameCode, name) {
     this.socket = io('http://localhost:5000');
+    this.socket.on('startGame', data => {
+      this.setState({ viewState: "table" });
+    });
     
     this.setState({
       viewState: "lobby",
@@ -35,20 +38,22 @@ class App extends React.Component {
   render() {
     const views = {
       home:   <Home 
-                onCreate={ () => this.setState({ viewState: "create" }) } 
-                onJoin={ () => this.setState({ viewState: "join" }) }/>,
+                createGame={ () => this.setState({ viewState: "create" }) } 
+                joinGame={ () => this.setState({ viewState: "join" }) }/>,
       create: <Create
-                onBack={ () => this.setState({ viewState: "home" }) }
-                onCreate={ name => createGame().then(res => this.setGame(res.gameCode, name)) }/>,
+                goBack={ () => this.setState({ viewState: "home" }) }
+                create={ name => createGame().then(res => this.setGame(res.gameCode, name)) }/>,
       join:   <Join
-                onBack={ () => this.setState({ viewState: "home" }) }
-                onJoin={ (gameCode, name) => this.setGame(gameCode, name) }/>,
+                goBack={ () => this.setState({ viewState: "home" }) }
+                join={ (gameCode, name) => this.setGame(gameCode, name) }/>,
       lobby:  <Lobby
-                onEnd={ () => this.setState({ viewState: "home" }) }
+                endGame={ () => this.setState({ viewState: "home" }) }
                 gameCode={this.state.gameCode}
                 name={this.state.name}
                 socket={this.socket}/>,
-      table:  <Table/>,
+      table:  <Table
+                gameCode={this.state.gameCode}
+                socket={this.socket}/>,
     }
 
     return (

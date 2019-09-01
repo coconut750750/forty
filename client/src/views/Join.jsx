@@ -25,8 +25,8 @@ class Join extends Component {
           return;
         }
 
-        this.props.onJoin(this.state.gameCode, this.state.name);
-      })
+        this.props.join(this.state.gameCode, this.state.name);
+      });
     });
   }
 
@@ -42,17 +42,18 @@ class Join extends Component {
         <input type="name" className="form-control" placeholder="Enter your name" 
           value={this.state.name} 
           onChange={ e => this.setState({ name: e.target.value }) }/>
-        <br/>
-        {this.state.message && <div class="alert alert-danger" role="alert">
-          {this.state.message}
-        </div>}
 
         <br/>
 
         <div className="row d-flex justify-content-center">
-          <button type="button" className="btn btn-light" onClick={this.props.onBack}>Back</button>
+          <button type="button" className="btn btn-light" onClick={this.props.goBack}>Back</button>
           <button type="button" className="btn btn-light" onClick={ () => this.joinGame() }>Join</button>
         </div>
+
+        <br/>
+        {this.state.message && <div class="alert alert-danger" role="alert">
+          {this.state.message}
+        </div>}
       </div>
     );
   }

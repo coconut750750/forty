@@ -31,7 +31,10 @@ app.get('/api/checkname', (req, res) => {
   const { gameCode } = req.query;
   if (gameCode != undefined) {
     const game = app.forty.retrieveGame(gameCode);
-    if (game.playerExists(name)) {
+    if (game.playerExists(name) && !game.isActive(name)) {
+      res.send({ valid: true });
+      return;
+    } else if (game.playerExists(name)) {
       res.send({ valid: false, message: 'This name has been taken' });
       return;
     }
@@ -50,22 +53,49 @@ app.get('/api/checkcode', (req, res) => {
   if (game != undefined) {
     res.send({ valid: true });
   } else {
-    res.send({ valid: false, message: 'This game code is invalid' })
+    res.send({ valid: false, message: 'This game code is invalid' });
   }
 })
 
 app.io.on('connect', function (socket) {
   var game;
   var name;
+  var player;
 
   socket.on('join', data => {
     name = data.name;
     game = app.forty.retrieveGame(data.gameCode);
 
-    game.addPlayer(name, socket);
+    if (game.started) {
+      game.activatePlayer(name);
+      socket.emit('startGame', {});
+    } else {
+      game.addPlayer(name, socket);
+    }
+    player = game.getPlayer(name);
+  });
+
+  socket.on('getPlayers', data => {
+    socket.emit('players', game.getPlayerData());
+  })
+
+  socket.on('start', data => {
+    if (game.isFull()) {
+      game.start();
+    } else {
+      socket.emit('startFail', { message: 'Not enough players have joined the game' });
+    }
+  });
+
+  socket.on('permutePlayers', data => {
+    game.permute();
   });
 
   socket.on('disconnect', data => {
-    game.removePlayer(name);
+    if (game.started && !player.isAdmin) {
+      game.deactivatePlayer(name);
+    } else {
+      game.removePlayer(name);
+    }
   });
 });

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import io from 'socket.io-client';
+
+import GameCode from 'components/GameCode';
+import PlayerList from 'components/PlayerList';
 
 import './Lobby.css';
 
@@ -8,45 +10,50 @@ class Lobby extends Component {
     super(props);
     this.state = {
       players: [],
+      message: undefined,
     };
   }
 
   componentDidMount() {
     this.props.socket.emit('join', { name: this.props.name, gameCode: this.props.gameCode });
-    this.props.socket.on('updateLobby', data => {
+    this.props.socket.on('updatePlayers', data => {
       this.setState({ players: data.players });
+    });
+
+    this.props.socket.on('startFail', data => {
+      this.setState({ message: data.message });
     });
 
     this.props.socket.on('endGame', data => {
       this.leaveGame();
-    })
+    });
   }
 
   leaveGame() {
     this.props.socket.disconnect();
-    this.props.onEnd();
+    this.props.endGame();
   }
 
   render() {
     return (
       <div>
         <p>Lobby</p>
-        <p>Game code: <span id="gamecode" class="badge badge-secondary badge-light">{this.props.gameCode}</span></p>
+        <GameCode gameCode={this.props.gameCode}/>
         
         <br/>
 
         <p>Players</p>
-        <div className="d-flex justify-content-center">
-          {this.state.players.map( playerName => (
-            <div class="badge badge-secondary badge-dark m-3">{ playerName }</div>
-          ))}
-        </div>
+        <PlayerList players={this.state.players}/>
 
         <br/>
 
         <button type="button" className="btn btn-light" onClick={ () => this.leaveGame() }>Leave Game</button>
-        <button type="button" className="btn btn-light" onClick={undefined}>Start Game</button>
+        <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('start') }>Start Game</button>
 
+        <br/>
+        {this.state.message && <div class="alert alert-danger" role="alert">
+          {this.state.message}
+        </div>}
       </div>
     );
   }

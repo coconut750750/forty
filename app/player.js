@@ -6,6 +6,8 @@ class Player {
     this.socket = socket;
     this.isAdmin = isAdmin;
     this.hand = [];
+
+    this.active = true;
   }
 
   possibleCards(leadCard) {
@@ -19,6 +21,14 @@ class Player {
       return this.hand
     }
     return cardsInFamily;
+  }
+
+  json() {
+    return {
+      name: this.name,
+      isAdmin: this.isAdmin,
+      active: this.active,
+    };
   }
 
   send(event, data) {

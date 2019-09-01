@@ -17,8 +17,8 @@ class Create extends Component {
         this.setState({ message: res.message });
         return;
       }
-      
-      this.props.onCreate(this.state.name);
+
+      this.props.create(this.state.name);
     });
   }
 
@@ -28,16 +28,18 @@ class Create extends Component {
         <p>Create Game</p>
 
         <input type="name" className="form-control" placeholder="Enter your name" value={this.state.name} onChange={ e => this.setState({ name: e.target.value })}/>
+        
+        <br/>
+
+        <div className="row d-flex justify-content-center">
+          <button type="button" className="btn btn-light" onClick={this.props.goBack}>Back</button>
+          <button type="button" className="btn btn-light" onClick={ () => this.createGame() }>Create</button>
+        </div>
+
         <br/>
         {this.state.message && <div class="alert alert-danger" role="alert">
           {this.state.message}
         </div>}
-        <br/>
-
-        <div className="row d-flex justify-content-center">
-          <button type="button" className="btn btn-light" onClick={this.props.onBack}>Back</button>
-          <button type="button" className="btn btn-light" onClick={ () => this.createGame() }>Create</button>
-        </div>
       </div>
     );
   }

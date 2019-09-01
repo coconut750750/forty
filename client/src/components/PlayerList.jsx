@@ -7,13 +7,12 @@ class PlayerList extends Component {
 
   render() {
     return (
-      <div>
-        <p>Players</p>
-        <div className="d-flex justify-content-center">
-          {this.props.players.map( player => (
-            <div class="badge badge-secondary badge-dark m-3">{ player.name }</div>
-          ))}
-        </div>
+      <div className="d-flex justify-content-center">
+        {this.props.players.map( player => (
+          player.active ? 
+          <div class="badge badge-secondary badge-dark m-3">{ player.name }</div> :
+          <div class="badge badge-secondary badge-light m-3">{ player.name }</div>
+        ))}
       </div>
     );
   }
