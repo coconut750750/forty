@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
 
-class PlayerList extends Component {
-  constructor(props) {
-    super(props);
-  }
+import PlayerName from 'components/PlayerName';
 
+class PlayerList extends Component {
   render() {
     return (
       <div className="d-flex justify-content-center">
-        {this.props.players.map( player => (
-          player.active ? 
-          <div class="badge badge-secondary badge-dark m-3">{ player.name }</div> :
-          <div class="badge badge-secondary badge-light m-3">{ player.name }</div>
-        ))}
+        {this.props.players.map( player => <PlayerName player={player}/> )}
       </div>
     );
   }

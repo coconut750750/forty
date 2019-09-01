@@ -23,10 +23,9 @@ class Table extends Component {
       <div>
         <p>Table</p>
         <GameCode gameCode={this.props.gameCode}/>
+        <PlayerList players={this.state.players}/>
 
         <br/>
-
-        <PlayerList players={this.state.players}/>
 
         <br/>
       </div>
