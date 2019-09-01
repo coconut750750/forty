@@ -15,9 +15,6 @@ class Table extends Component {
     this.props.socket.on('players', data => {
       this.setState({ players: data.players });
     });
-    this.props.socket.on('updatePlayers', data => {
-      this.setState({ players: data.players });
-    })
     this.props.socket.emit('getPlayers', {});
   }
 

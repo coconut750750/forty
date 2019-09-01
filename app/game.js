@@ -1,5 +1,7 @@
 var _ = require('lodash');
+
 var Player = require('./player');
+var { newDeck, calibrate } = require('./deckutils');
 
 const MAX_PLAYERS = 4;
 const PHASES = ['teams'];
@@ -12,6 +14,7 @@ class Game {
 
     this.started = false;
     this.phase = undefined;
+    this.actionIndex = undefined;
   }
 
   addPlayer(playerName, socket) {
@@ -60,7 +63,7 @@ class Game {
   }
 
   notifyPlayerChange() {
-    this.players.forEach(player => player.send('updatePlayers', this.getPlayerData()));
+    this.players.forEach(player => player.send('players', this.getPlayerData()));
   }
 
   getPlayerData() {
@@ -71,6 +74,34 @@ class Game {
     this.started = true;
     this.phase = PHASES[0];
     this.notifyGameStart();
+  }
+
+  startRound() {
+    this.deck = newDeck();
+    this.trumpCard = undefined;
+    this.dealsLeft = 48;
+  }
+
+  startDeal() {
+    this.actionIndex = 0;
+  }
+
+  deal(name) {
+    if (this.players[this.actionIndex].name === name && this.dealsLeft > 0) {
+      this.players[this.actionIndex].addCard(this.deck.pop());
+      this.actionIndex = (this.actionIndex + 1) % MAX_PLAYERS;
+      this.dealsLeft--;
+    }
+  }
+
+  canSetTrumpCard() {
+    return this.trumpCard === undefined;
+  }
+
+  setTrumpCard(trumpCard) {
+    this.trumpCard = trumpCard;
+    calibrate(this.deck, trumpCard);
+    this.player.forEach(player => calibrate(player.hand, trumpCard));
   }
 
   notifyGameStart() {

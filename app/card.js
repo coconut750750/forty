@@ -1,5 +1,4 @@
-const RANKS = '234567890jqkayz';
-const SUITS = 'hcds';
+const { RANKS, SUITS, SJOKER, FJOKER } = require('./const');
 
 class Card {
   constructor(rank, suit) {
@@ -9,7 +8,7 @@ class Card {
   }
 
   calibrate(trumpCard) {
-    if (this.rank === 'y' || this.rank === 'z' || this.rank === trumpCard.rank) {
+    if (this.rank === SJOKER || this.rank === FJOKER || this.rank === trumpCard.rank) {
         this.family = trumpCard.suit;
     } else {
         this.family = this.suit;
@@ -17,9 +16,9 @@ class Card {
   }
 
   calculateRelativeRank(leadCard, trumpCard) {
-    if (this.rank === 'z') {
+    if (this.rank === FJOKER) {
         return 100;
-    } else if (this.rank === 'y') {
+    } else if (this.rank === SJOKER) {
         return 99;
     } else if (this.rank === trumpCard.rank) {
         if (this.suit === trumpCard.suit) {
@@ -34,6 +33,10 @@ class Card {
     } else {
         return -1; // -1
     }
+  }
+
+  json() {
+    return {rank: this.rank, suit: this.suit};
   }
 }
 

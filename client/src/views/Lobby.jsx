@@ -16,7 +16,7 @@ class Lobby extends Component {
 
   componentDidMount() {
     this.props.socket.emit('join', { name: this.props.name, gameCode: this.props.gameCode });
-    this.props.socket.on('updatePlayers', data => {
+    this.props.socket.on('players', data => {
       this.setState({ players: data.players });
     });
 

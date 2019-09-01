@@ -10,7 +10,15 @@ class Player {
     this.active = true;
   }
 
-  possibleCards(leadCard) {
+  addCard(card) {
+    this.hand.push(card);
+  }
+
+  // playCard(index, trick) {
+  //   trick.addCard(this.hand.splice(index, 1)[0]);
+  // }
+
+  legalCards(leadCard) {
     var cardsInFamily = [];
     for (var card of this.hand) {
       if (card.family === leadCard.family) {
