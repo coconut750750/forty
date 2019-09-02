@@ -14,6 +14,11 @@ class Player {
     this.active = true;
   }
 
+  addCards(cards) {
+    this.hand = this.hand + cards;
+    this.sortHand();
+  }
+
   addCard(card) {
     this.hand.push(card);
     this.sortHand();
@@ -36,7 +41,7 @@ class Player {
   }
 
   legalRevealCards() {
-    return _.map(_.keys(_.filter(this.hand, c => c.rank === this.getTrumpRank())), Number);
+    return _.map(_.keys(_.pickBy(this.hand, c => c.rank === this.getTrumpRank())), Number);
   }
 
   json() {

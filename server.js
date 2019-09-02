@@ -119,6 +119,11 @@ app.io.on('connect', function (socket) {
     game.deal(name);
   });
 
+  socket.on('setTrump', data => {
+    const { suit } = data;
+    game.setTrumpSuit(suit);
+  });
+
   socket.on('disconnect', data => {
     if (game.started && !player.isAdmin) {
       game.deactivatePlayer(name);

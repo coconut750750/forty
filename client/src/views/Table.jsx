@@ -39,7 +39,6 @@ class Table extends Component {
     this.props.socket.on('legal', data => {
       var hand = _.cloneDeep(this.state.hand);
       data.cards.forEach(i => { hand[i].highlight = true; });
-      console.log(hand);
       this.setState({ hand });
     });
 

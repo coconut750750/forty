@@ -6,7 +6,7 @@ var { newDeck, calibrate } = require('./deckutils');
 
 const MAX_PLAYERS = 4;
 const STARTING_LEVEL = 2;
-const EXTRA_CARDS = 6;
+const KITTY_CARDS = 6;
 const PHASES = ['teams', 'deal'];
 
 class Game {
@@ -86,13 +86,14 @@ class Game {
     this.deck = newDeck();
     this.trumpSuit = undefined;
     this.level = this.topTeam === undefined ? STARTING_LEVEL : this.teamLevels[this.topTeam];
-    this.dealsLeft = this.deck.length - EXTRA_CARDS;
+    this.dealsLeft = this.deck.length - KITTY_CARDS;
     this.phase = PHASES[1];
     this.notifyPhaseChange();
   }
 
   startDeal() {
-    this.actionIndex = 0;
+    this.startIndex = this.startIndex || Math.floor(Math.random() * MAX_PLAYERS);
+    this.actionIndex = this.startIndex;
     this.notifyActionPlayer();
   }
 
@@ -100,10 +101,16 @@ class Game {
     if (this.players[this.actionIndex].name === name && this.dealsLeft > 0) {
       this.players[this.actionIndex].addCard(this.deck.pop());
       this.players[this.actionIndex].sendHand();
-
-      this.actionIndex = (this.actionIndex + 1) % MAX_PLAYERS;
-      this.notifyActionPlayer();
       this.dealsLeft--;
+
+      if (this.dealsLeft > 0) {
+        this.actionIndex = (this.actionIndex + 1) % MAX_PLAYERS;
+        this.notifyActionPlayer();
+      // } else {
+      //   this.players[this.startIndex].addCards(this.deck);
+      //   this.players[this.startIndex].sendHand();
+      //   this.deck = [];
+      }
     }
   }
 
@@ -111,11 +118,13 @@ class Game {
     return this.trumpSuit === undefined;
   }
 
-  setTrumpCard(trumpSuit) {
+  setTrumpSuit(trumpSuit) {
     this.trumpSuit = trumpSuit;
     const trumpCard = new Card(this.level, this.trumpSuit);
     calibrate(this.deck, trumpCard);
     this.players.forEach(player => calibrate(player.hand, trumpCard));
+    this.players.forEach(player => player.sortHand());
+    this.players.forEach(player => player.sendHand());
   }
 
   getTrumpRank() {
