@@ -1,11 +1,14 @@
 var Card = require('./card');
+var _ = require('lodash');
 
 class Trick {
   constructor() {
     this.cards = [];
+    this.names = [];
   }
 
-  addCard(card) {
+  addCard(name, card) {
+    this.names.push(name);
     this.cards.push(card);
   }
 
@@ -36,6 +39,11 @@ class Trick {
       }
     }
     return points;
+  }
+
+  json() {
+    const cardJson = this.cards.map(c => c.json());
+    return _.zipObject(this.names, cardJson)
   }
 }
 

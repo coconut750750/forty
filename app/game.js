@@ -185,17 +185,18 @@ class Game {
       this.actionIndex = this.winnerIndex;
     }
 
+    // this.tricksLeft = this.players[0].hand.length;
     this.trick = new Trick();
 
     this.notifyActionPlayer();
   }
 
   playCard(card) {
-    card = this.players[this.actionIndex].popCard(card);
-    console.log(this.players[this.actionIndex].hand);
-    this.players[this.actionIndex].sendHand();
-    this.trick.addCard(card);
-    this.notifyCardPlayed(card);
+    const actionPlayer = this.players[this.actionIndex];
+    card = actionPlayer.popCard(card);
+    actionPlayer.sendHand();
+    this.trick.addCard(actionPlayer.name, card);
+    this.notifyTrickUpdate();
 
     if (this.trick.cards.length === MAX_PLAYERS) {
       this.winnerIndex = this.addTurn(this.winnerIndex, this.trick.determineWinnerPosition(this.trumpCard));
@@ -240,8 +241,8 @@ class Game {
     this.players.forEach(player => player.send('trick', { points: trick.calculatePoints() }));
   }
 
-  notifyCardPlayed(card) {
-    this.players.forEach(player => player.send('play', { name: this.players[this.actionIndex].name, card }))
+  notifyTrickUpdate() {
+    this.players.forEach(player => player.send('play', { trick: this.trick.json() }))
   }
 
   endGame() {

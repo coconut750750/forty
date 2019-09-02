@@ -66,17 +66,15 @@ class Table extends Component {
     });
 
     this.props.socket.on('trick', data => {
-      const { points } = data.points;
-      this.setState({
-        cardsOnTable: {}, 
-        points,
-      });
+      this.setState({ points: data.points });
     });
 
     this.props.socket.on('play', data => {
-      var { card, name } = data;
-      var { cardsOnTable } = this.state;
-      cardsOnTable[name] = new Card(card.rank, card.suit);
+      var { trick } = data;
+      var cardsOnTable = {};
+      _.forEach(trick, (card, name) => {
+        cardsOnTable[name] = new Card(card.rank, card.suit);
+      })
       this.setState({ cardsOnTable });
     });
 
