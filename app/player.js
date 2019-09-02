@@ -52,8 +52,6 @@ class Player {
 
   sortHand() {
     this.hand = _.reverse(_.sortBy(this.hand, c => c.getSortOrder(this.getTrumpRank(), this.getTrumpSuit())));
-    console.log(this.hand);
-    console.log(this.getTrumpRank(), this.getTrumpSuit());
   }
 
   sendHand() {
