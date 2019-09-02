@@ -71,21 +71,21 @@ class Table extends Component {
     const game_views = {
       teams:  <Teams 
                 players={this.state.players}
-                socket={this.props.socket} />,
+                socket={this.props.socket}/>,
       deal:   <Deal
                 socket={this.props.socket}
                 hand={this.state.hand}
                 players={this.state.players}
                 meIndex={this.meIndex}
                 trumpCard={this.state.trumpCard}
-                trumpSetter={this.state.trumpSetter} />,
+                trumpSetter={this.state.trumpSetter}/>,
       kitty:  <Kitty
                 socket={this.props.socket}
                 hand={this.state.hand}
                 players={this.state.players}
                 meIndex={this.meIndex}
                 trumpCard={this.state.trumpCard}
-                trumpSetter={this.state.trumpSetter} />,
+                trumpSetter={this.state.trumpSetter}/>,
     };
     return (
       <div>

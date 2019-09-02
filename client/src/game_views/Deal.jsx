@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Hand from 'components/Hand';
+import GameCircle from 'components/GameCircle';
 
 class Deal extends Component {
   constructor(props) {
@@ -33,21 +34,13 @@ class Deal extends Component {
       <div>
         <p>Dealing cards</p>
 
-        <Hand
-          player={acrossPlayer}
-          cards={this.props.trumpSetter === acrossPlayer.name ? [this.props.trumpCard] : undefined}/>
-
-        <div className="d-flex justify-content-center">
-          <Hand
-            player={leftPlayer}
-            cards={this.props.trumpSetter === leftPlayer.name ? [this.props.trumpCard]  : undefined}/>
-
-          <div className="col-4"></div>
-
-          <Hand
-            player={rightPlayer}
-            cards={this.props.trumpSetter === rightPlayer.name ? [this.props.trumpCard]  : undefined}/>
-        </div>
+        <GameCircle
+          acrossPlayer={acrossPlayer}
+          acrossCard={this.props.trumpSetter === acrossPlayer.name ? this.props.trumpCard : undefined}
+          leftPlayer={leftPlayer}
+          leftCard={this.props.trumpSetter === leftPlayer.name ? this.props.trumpCard  : undefined}
+          rightPlayer={rightPlayer}
+          rightCard={this.props.trumpSetter === rightPlayer.name ? this.props.trumpCard  : undefined}/>
 
         <Hand
           player={mePlayer}
