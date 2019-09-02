@@ -21,9 +21,10 @@ class Table extends Component {
     this.props.socket.on('players', data => {
       this.setState({ players: data.players });
     });
-    
+
     this.props.socket.on('phase', data => {
       this.setState({ phase: data.phase });
+      this.props.socket.emit('readyForAction', {});
     });
 
     this.props.socket.on('hand', data => {
@@ -37,6 +38,7 @@ class Table extends Component {
 
     this.props.socket.emit('getPlayers', {});
     this.props.socket.emit('getPhase', {});
+    this.props.socket.emit('getHand', {});
   }
 
   render() {

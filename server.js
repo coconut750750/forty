@@ -68,7 +68,7 @@ app.io.on('connect', function (socket) {
     game = app.forty.retrieveGame(data.gameCode);
 
     if (game.started) {
-      game.activatePlayer(name);
+      game.activatePlayer(name, socket);
       socket.emit('start', {});
     } else {
       game.addPlayer(name, socket);
@@ -92,13 +92,20 @@ app.io.on('connect', function (socket) {
     socket.emit('phase', { phase: game.phase });
   });
 
+  socket.on('readyForAction', data => {
+    game.notifyActionPlayer();
+  });
+
   socket.on('permutePlayers', data => {
     game.permute();
   });
 
   socket.on('confirmTeams', data => {
     game.startRound();
-    game.startDeal();
+  });
+
+  socket.on('getHand', data => {
+    player.sendHand();
   });
 
   socket.on('draw', data => {

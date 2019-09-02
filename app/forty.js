@@ -9,9 +9,12 @@ class Forty {
       const code = 'ffff';
       const newGame = new Game('ffff', () => this.endGame('ffff'));
       this.games['ffff'] = newGame;
+      newGame.addPlayer('player1', undefined);
       newGame.addPlayer('player2', undefined);
       newGame.addPlayer('player3', undefined);
       newGame.addPlayer('player4', undefined);
+      newGame.start();
+      newGame.deactivatePlayer('player1');
     }
   }
 

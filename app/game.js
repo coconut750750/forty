@@ -36,8 +36,9 @@ class Game {
     return _.filter(this.players, p => p.name == playerName)[0];
   }
 
-  activatePlayer(playerName) {
+  activatePlayer(playerName, socket) {
     this.getPlayer(playerName).active = true;
+    this.getPlayer(playerName).socket = socket;
     this.notifyPlayerChange();
   }
 
@@ -87,6 +88,7 @@ class Game {
     this.dealsLeft = this.deck.length - EXTRA_CARDS;
     this.phase = PHASES[1];
     this.notifyPhaseChange();
+    this.startDeal();
   }
 
   startDeal() {
@@ -137,7 +139,9 @@ class Game {
   }
 
   notifyActionPlayer() {
-    this.players[this.actionIndex].send('action', {});
+    if (this.actionIndex !== undefined) {
+      this.players[this.actionIndex].send('action', {});
+    }
   }
 
   endGame() {
