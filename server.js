@@ -102,6 +102,7 @@ app.io.on('connect', function (socket) {
 
   socket.on('confirmTeams', data => {
     game.startRound();
+    game.startDeal();
   });
 
   socket.on('getHand', data => {

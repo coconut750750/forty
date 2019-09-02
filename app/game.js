@@ -1,6 +1,7 @@
 var _ = require('lodash');
 
 var Player = require('./player');
+var Card = require('./card');
 var { newDeck, calibrate } = require('./deckutils');
 
 const MAX_PLAYERS = 4;
@@ -88,7 +89,6 @@ class Game {
     this.dealsLeft = this.deck.length - EXTRA_CARDS;
     this.phase = PHASES[1];
     this.notifyPhaseChange();
-    this.startDeal();
   }
 
   startDeal() {

@@ -16,6 +16,11 @@ img.playing-card {
 }
 .active-hand img.playing-card { 
     cursor: pointer;
+    border: 2px transparent solid;
+}
+img.player-card .highlight {
+    border: 2px red solid;
+    border-radius: 6px;
 }
 
 /*

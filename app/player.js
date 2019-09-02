@@ -23,17 +23,20 @@ class Player {
   //   trick.addCard(this.hand.splice(index, 1)[0]);
   // }
 
-  legalCards(leadCard) {
-    var cardsInFamily = [];
-    for (var card of this.hand) {
-      if (card.family === leadCard.family) {
-        cardsInFamily.push(card);
-      }
+  legalPlayCards(leadCard) {
+    if (leadCard === undefined) {
+      return this.hand;
     }
+    
+    var cardsInFamily = _.filter(this.hand, c => c.family === leadCard.family);
     if (cardsInFamily.length === 0) {
-      return this.hand
+      return this.hand;
     }
     return cardsInFamily;
+  }
+
+  legalRevealCards() {
+    return _.filter(this.hand, c => c.rank === this.getTrumpRank());
   }
 
   json() {

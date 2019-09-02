@@ -2,7 +2,7 @@ var Player = require('../player');
 var Card = require('../card');
 
 function getNumLegalCards(cards, trumpCard, leadCard) {
-  var player = new Player('test', undefined, false);
+  var player = new Player('test', undefined, false, () => trumpCard.rank, () => trumpCard.suit);
   trumpCard.calibrate(trumpCard);
   leadCard.calibrate(leadCard);
 
@@ -10,16 +10,16 @@ function getNumLegalCards(cards, trumpCard, leadCard) {
     card.calibrate(trumpCard);
     player.addCard(card);
   }
-  return player.legalCards(leadCard).length;
+  return player.legalPlayCards(leadCard).length;
 }
 
 function getSortedCards(cards, trumpRank, trumpSuit) {
-  var player = new Player('test', undefined, false);
+  var player = new Player('test', undefined, false, () => trumpRank, () => trumpSuit);
 
   for (var card of cards) {
     player.addCard(card);
   }
-  player.sortHand(trumpRank, trumpSuit);
+  player.sortHand();
   return player.hand;
 }
 
