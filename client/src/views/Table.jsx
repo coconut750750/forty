@@ -7,6 +7,8 @@ import Deal from 'game_views/Deal';
 
 import Card from 'models/card';
 
+var _ = require('lodash');
+
 class Table extends Component {
   constructor(props) {
     super(props);
@@ -28,11 +30,16 @@ class Table extends Component {
     });
 
     this.props.socket.on('hand', data => {
-      var hand = [];
-      for (var c of data.hand) {
-        hand.push(new Card(c.rank, c.suit));
-      }
+      var hand = data.hand.map(c => new Card(c.rank, c.suit));
+      this.setState({ hand });
 
+      this.props.socket.emit('getLegalCards', {});
+    });
+
+    this.props.socket.on('legal', data => {
+      var hand = _.cloneDeep(this.state.hand);
+      data.cards.forEach(i => { hand[i].highlight = true; });
+      console.log(hand);
       this.setState({ hand });
     });
 

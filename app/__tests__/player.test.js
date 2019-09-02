@@ -1,7 +1,7 @@
 var Player = require('../player');
 var Card = require('../card');
 
-function getNumLegalCards(cards, trumpCard, leadCard) {
+function getLegalCardsIndicies(cards, trumpCard, leadCard) {
   var player = new Player('test', undefined, false, () => trumpCard.rank, () => trumpCard.suit);
   trumpCard.calibrate(trumpCard);
   leadCard.calibrate(leadCard);
@@ -10,7 +10,7 @@ function getNumLegalCards(cards, trumpCard, leadCard) {
     card.calibrate(trumpCard);
     player.addCard(card);
   }
-  return player.legalPlayCards(leadCard).length;
+  return player.legalPlayCards(leadCard);
 }
 
 function getSortedCards(cards, trumpRank, trumpSuit) {
@@ -25,47 +25,47 @@ function getSortedCards(cards, trumpRank, trumpSuit) {
 
 describe('list legal cards to play', () => {
   it('non trump suit lead and player follow suit', () => {
-    expect(getNumLegalCards([
-      new Card('4', 's'),
-      new Card('5', 'h'),
-      new Card('9', 'd'),
-      new Card('k', 'h'),
+    expect(getLegalCardsIndicies([
       new Card('z', 'z'),
+      new Card('4', 's'),
+      new Card('9', 'd'),
+      new Card('5', 'h'),
+      new Card('k', 'h'),
       new Card('q', 'h'),
-      ], new Card('2', 's'), new Card('a', 'h'))).toBe(3);
+      ], new Card('2', 's'), new Card('a', 'h'))).toEqual([3, 4, 5]);
   });
 
   it('non trump suit lead and player cannot follow suit', () => {
-    expect(getNumLegalCards([
-      new Card('4', 's'),
-      new Card('5', 'h'),
-      new Card('9', 'd'),
-      new Card('k', 'h'),
+    expect(getLegalCardsIndicies([
       new Card('z', 'z'),
+      new Card('4', 's'),
+      new Card('9', 'd'),
+      new Card('5', 'h'),
+      new Card('k', 'h'),
       new Card('q', 'h'),
-      ], new Card('2', 's'), new Card('a', 'c'))).toBe(6);
+      ], new Card('2', 's'), new Card('a', 'c'))).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
   it('trump suit lead and player has trump cards', () => {
-    expect(getNumLegalCards([
+    expect(getLegalCardsIndicies([
+      new Card('z', 'z'),
       new Card('4', 's'),
-      new Card('5', 'h'),
       new Card('9', 'd'),
       new Card('k', 'h'),
-      new Card('z', 'z'),
       new Card('q', 'h'),
-      ], new Card('2', 's'), new Card('a', 's'))).toBe(2);
+      new Card('5', 'h'),
+      ], new Card('2', 's'), new Card('a', 's'))).toEqual([0, 1]);
   });
 
   it('trump suit lead and player forced to play joker', () => {
-    expect(getNumLegalCards([
+    expect(getLegalCardsIndicies([
+      new Card('z', 'z'),
       new Card('4', 's'),
-      new Card('5', 'h'),
       new Card('9', 'd'),
       new Card('k', 'h'),
-      new Card('z', 'z'),
       new Card('q', 'h'),
-      ], new Card('2', 'c'), new Card('a', 'c'))).toBe(1);
+      new Card('5', 'h'),
+      ], new Card('2', 'c'), new Card('a', 'c'))).toEqual([0]);
   });
 });
 

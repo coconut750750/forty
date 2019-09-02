@@ -15,10 +15,10 @@ img.playing-card {
     margin: 0;
 }
 .active-hand img.playing-card { 
-    cursor: pointer;
     border: 2px transparent solid;
 }
-img.player-card .highlight {
+.active-hand img.highlight {
+    cursor: pointer;
     border: 2px red solid;
     border-radius: 6px;
 }

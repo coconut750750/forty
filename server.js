@@ -109,6 +109,12 @@ app.io.on('connect', function (socket) {
     player.sendHand();
   });
 
+  socket.on('getLegalCards', data => {
+    if (game.canSetTrumpSuit()) {
+      player.sendCardsToReveal();
+    }
+  });
+
   socket.on('draw', data => {
     game.deal(name);
   });

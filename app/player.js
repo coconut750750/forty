@@ -25,18 +25,18 @@ class Player {
 
   legalPlayCards(leadCard) {
     if (leadCard === undefined) {
-      return this.hand;
+      return _.range(this.hand.length);
     }
-    
-    var cardsInFamily = _.filter(this.hand, c => c.family === leadCard.family);
+
+    var cardsInFamily = _.map(_.keys(_.pickBy(this.hand, c => c.family === leadCard.family)), Number);
     if (cardsInFamily.length === 0) {
-      return this.hand;
+      return _.range(this.hand.length);
     }
     return cardsInFamily;
   }
 
   legalRevealCards() {
-    return _.filter(this.hand, c => c.rank === this.getTrumpRank());
+    return _.map(_.keys(_.filter(this.hand, c => c.rank === this.getTrumpRank())), Number);
   }
 
   json() {
@@ -59,6 +59,14 @@ class Player {
 
   sendHand() {
     this.send('hand', { hand: this.hand.map(card => card.json()) });
+  }
+
+  sendCardsToReveal() {
+    this.send('legal', { cards: this.legalRevealCards()});
+  }
+
+  sendCardsToPlay() {
+    this.send('legal', { cards: this.legalPlayCards()});
   }
 }
 

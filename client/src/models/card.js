@@ -1,8 +1,8 @@
 export default class Card {
-  constructor(rank, suit, revealable) {
+  constructor(rank, suit, highlight) {
     this.rank = rank;
     this.suit = suit;
-    this.revealable = revealable;
+    this.highlight = highlight;
   }
 
   json() {
