@@ -4,6 +4,7 @@
   "private": true,
   "proxy": "http://localhost:5000/",
   "dependencies": {
+    "cardsJS": "^1.1.1",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-scripts": "3.1.1",

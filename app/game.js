@@ -4,6 +4,8 @@ var Player = require('./player');
 var { newDeck, calibrate } = require('./deckutils');
 
 const MAX_PLAYERS = 4;
+const STARTING_LEVEL = 2;
+const EXTRA_CARDS = 6;
 const PHASES = ['teams', 'deal'];
 
 class Game {
@@ -13,12 +15,16 @@ class Game {
     this.onEnd = onEnd;
 
     this.started = false;
-    this.phase = undefined;
-    this.actionIndex = undefined;
   }
 
   addPlayer(playerName, socket) {
-    this.players.push(new Player(playerName, socket, this.players.length == 0));
+    this.players.push(new Player(
+      playerName,
+      socket,
+      this.players.length == 0,
+      () => this.getTrumpRank(),
+      () => this.getTrumpSuit(),
+    ));
     this.notifyPlayerChange();
   }
 
@@ -64,6 +70,8 @@ class Game {
   start() {
     this.started = true;
     this.phase = PHASES[0];
+    this.teamLevels = [STARTING_LEVEL, STARTING_LEVEL];
+    this.topTeam = undefined;
     this.notifyGameStart();
   }
 
@@ -74,8 +82,9 @@ class Game {
 
   startRound() {
     this.deck = newDeck();
-    this.trumpCard = undefined;
-    this.dealsLeft = 48;
+    this.trumpSuit = undefined;
+    this.level = this.topTeam === undefined ? STARTING_LEVEL : this.teamLevels[this.topTeam];
+    this.dealsLeft = this.deck.length - EXTRA_CARDS;
     this.phase = PHASES[1];
     this.notifyPhaseChange();
   }
@@ -96,14 +105,23 @@ class Game {
     }
   }
 
-  canSetTrumpCard() {
-    return this.trumpCard === undefined;
+  canSetTrumpSuit() {
+    return this.trumpSuit === undefined;
   }
 
-  setTrumpCard(trumpCard) {
-    this.trumpCard = trumpCard;
+  setTrumpCard(trumpSuit) {
+    this.trumpSuit = trumpSuit;
+    const trumpCard = new Card(this.level, this.trumpSuit);
     calibrate(this.deck, trumpCard);
     this.players.forEach(player => calibrate(player.hand, trumpCard));
+  }
+
+  getTrumpRank() {
+    return this.level.toString();
+  }
+
+  getTrumpSuit() {
+    return this.trumpSuit;
   }
 
   notifyPlayerChange() {

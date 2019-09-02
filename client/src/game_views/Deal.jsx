@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Hand from 'components/Hand';
+
 class Deal extends Component {
   constructor(props) {
     super(props);
@@ -25,11 +27,13 @@ class Deal extends Component {
       <div>
         <p>Dealing cards</p>
 
-        {this.props.hand.map(c => <p>{`${c.rank}${c.suit} `}</p>)}
-
         <button type="button" className="btn btn-light" 
           onClick={ () => this.draw() }
           disabled={!this.state.dealActive}>Draw</button>
+
+        <br/>
+
+        <Hand cards={this.props.hand}/>
 
       </div>
     );

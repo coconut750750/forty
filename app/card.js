@@ -35,6 +35,20 @@ class Card {
     }
   }
 
+  getSortOrder(trumpRank, trumpSuit) {
+    if (this.rank === FJOKER) {
+      return 100;
+    } else if (this.rank === SJOKER) {
+      return 99;
+    } else if (this.rank === trumpRank) {
+      return 98;
+    } else if (this.suit === trumpSuit) {
+      return 80 + RANKS.indexOf(this.rank);
+    } else {
+      return SUITS.indexOf(this.suit) * 20 + RANKS.indexOf(this.rank);
+    }
+  }
+
   json() {
     return {rank: this.rank, suit: this.suit};
   }

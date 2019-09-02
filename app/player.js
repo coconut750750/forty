@@ -1,17 +1,22 @@
 var Card = require('./card');
+var _ = require('lodash');
 
 class Player {
-  constructor(name, socket, isAdmin) {
+  constructor(name, socket, isAdmin, getTrumpRank, getTrumpSuit) {
     this.name = name;
     this.socket = socket;
     this.isAdmin = isAdmin;
     this.hand = [];
+
+    this.getTrumpRank = getTrumpRank;
+    this.getTrumpSuit = getTrumpSuit;
 
     this.active = true;
   }
 
   addCard(card) {
     this.hand.push(card);
+    this.sortHand();
   }
 
   // playCard(index, trick) {
@@ -43,6 +48,12 @@ class Player {
     if (this.socket != undefined) {
       this.socket.emit(event, data);
     }
+  }
+
+  sortHand() {
+    this.hand = _.reverse(_.sortBy(this.hand, c => c.getSortOrder(this.getTrumpRank(), this.getTrumpSuit())));
+    console.log(this.hand);
+    console.log(this.getTrumpRank(), this.getTrumpSuit());
   }
 
   sendHand() {
