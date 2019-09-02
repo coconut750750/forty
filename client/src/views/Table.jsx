@@ -30,6 +30,7 @@ class Table extends Component {
   componentDidMount() {
     this.props.socket.on('players', data => {
       this.setState({ players: data.players });
+      this.meIndex = _.findIndex(data.players, p => p.name = this.props.name);
     });
 
     this.props.socket.on('phase', data => {
@@ -66,14 +67,14 @@ class Table extends Component {
                 socket={this.props.socket}/>,
       deal:   <Deal
                 socket={this.props.socket}
-                hand={this.state.hand}/>,
+                hand={this.state.hand}
+                players={this.state.players}
+                meIndex={this.meIndex}/>,
     };
     return (
       <div>
-        <p>Table</p>
         <GameCode gameCode={this.props.gameCode}/>
-
-        <br/>
+        <p>Table</p>
 
         {game_views[this.state.phase]}
 

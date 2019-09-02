@@ -1,5 +1,5 @@
 img.playing-card {
-    height: 96px;
+    height: 76px;
     margin: 0;
     padding: 0;
     border: 0;
@@ -13,7 +13,7 @@ img.playing-card {
 .hand {
     padding: 0;
     margin: 0;
-    height: 110px;
+    height: 90px;
 }
 .active-hand img.playing-card { 
     border: 2px transparent solid;

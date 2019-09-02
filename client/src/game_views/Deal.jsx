@@ -23,18 +23,36 @@ class Deal extends Component {
   }
 
   render() {
+    const nPlayers = this.props.players.length;
+    const mePlayer = this.props.players[this.props.meIndex];
+    const rightPlayer = this.props.players[(this.props.meIndex + 1) % nPlayers];
+    const acrossPlayer = this.props.players[(this.props.meIndex + 2) % nPlayers];
+    const leftPlayer = this.props.players[(this.props.meIndex + 3) % nPlayers];
+
     return (
       <div>
         <p>Dealing cards</p>
+
+        <Hand
+          player={acrossPlayer}/>
+
+        <div className="d-flex justify-content-center">
+          <Hand
+            player={leftPlayer}/>
+          <div className="col-4"></div>
+          <Hand
+            player={rightPlayer}/>
+        </div>
+
+        <Hand
+          player={mePlayer}
+          cards={this.props.hand}
+          click={ c => this.props.socket.emit('setTrump', { suit: c.suit }) }/>
 
         <button type="button" className="btn btn-light" 
           onClick={ () => this.draw() }
           disabled={!this.state.dealActive}>Draw</button>
         <br/>
-
-        <Hand 
-          cards={this.props.hand}
-          click={ c => this.props.socket.emit('setTrump', { suit: c.suit }) }/>
 
       </div>
     );
