@@ -2,6 +2,7 @@ var _ = require('lodash');
 
 var Player = require('./player');
 var Card = require('./card');
+var Trick = require('./trick');
 var { newDeck, calibrate } = require('./deckutils');
 
 const MAX_PLAYERS = 4;
@@ -23,8 +24,8 @@ class Game {
       playerName,
       socket,
       this.players.length == 0,
-      () => this.getTrumpRank(),
-      () => this.getTrumpSuit(),
+      () => this.getTrump(),
+      () => this.getLead(),
     ));
     this.notifyPlayerChange();
   }
@@ -74,6 +75,7 @@ class Game {
     this.phase = PHASES[0];
     this.teamLevels = [STARTING_LEVEL, STARTING_LEVEL];
     this.topTeam = undefined;
+    this.level = this.topTeam === undefined ? STARTING_LEVEL : this.teamLevels[this.topTeam];
     this.notifyGameStart();
   }
 
@@ -87,7 +89,6 @@ class Game {
     this.trumpCard = undefined;
     this.trumpSetter = undefined;
     this.kitty = [];
-    this.level = this.topTeam === undefined ? STARTING_LEVEL : this.teamLevels[this.topTeam];
     this.dealsLeft = this.deck.length - KITTY_CARDS;
     this.phase = PHASES[1];
 
@@ -106,6 +107,14 @@ class Game {
     return this.players[this.actionIndex].name;
   }
 
+  addTurn(start, inc) {
+    return (start + inc) % MAX_PLAYERS;
+  }
+
+  nextActionPlayer() {
+    this.actionIndex = this.addTurn(this.actionIndex, 1);
+  }
+
   startDeal() {
     this.notifyActionPlayer();
   }
@@ -119,7 +128,7 @@ class Game {
       if (this.dealsLeft === 0 && !this.canSetTrumpSuit()) {
         this.startKitty();
       } else {
-        this.actionIndex = (this.actionIndex + 1) % MAX_PLAYERS;
+        this.nextActionPlayer();
         this.notifyActionPlayer();
       }
     }
@@ -130,19 +139,18 @@ class Game {
   }
 
   setTrumpSuit(trumpSuit) {
-    this.trumpCard = new Card(this.level, trumpSuit);
+    this.trumpCard = new Card(this.level.toString(), trumpSuit);
+    this.trumpCard.calibrate(this.trumpCard);
     calibrate(this.deck, this.trumpCard);
     this.players.forEach(player => calibrate(player.hand, this.trumpCard));
     this.players.forEach(player => player.sortHand());
     this.players.forEach(player => player.sendHand());
   }
 
-  getTrumpRank() {
-    return this.level.toString();
-  }
-
-  getTrumpSuit() {
-    return this.trumpCard === undefined ? undefined : this.trumpCard.suit;
+  getTrump() {
+    const rank = this.level.toString();
+    const suit = this.trumpCard === undefined ? undefined : this.trumpCard.suit;
+    return { rank, suit };
   }
 
   startKitty() {
@@ -160,12 +168,50 @@ class Game {
   setKitty(cards) {
     cards.map(c => new Card(c.rank, c.suit));
     this.kitty = cards;
-    console.log(this.kitty);
+    cards.forEach(c => this.players[this.actionIndex].popCard(c))
+    this.players[this.actionIndex].sendHand();
 
     this.phase = PHASES[3];
     this.notifyPhaseChange();
 
     this.notifyActionPlayer();
+  }
+
+  startTrick() {
+    if (this.winnerIndex === undefined) {
+      this.actionIndex = this.startIndex;
+      this.winnerIndex = this.startIndex;
+    } else {
+      this.actionIndex = this.winnerIndex;
+    }
+
+    this.trick = new Trick();
+
+    this.notifyActionPlayer();
+  }
+
+  playCard(card) {
+    card = this.players[this.actionIndex].popCard(card);
+    console.log(this.players[this.actionIndex].hand);
+    this.players[this.actionIndex].sendHand();
+    this.trick.addCard(card);
+    this.notifyCardPlayed(card);
+
+    if (this.trick.cards.length === MAX_PLAYERS) {
+      this.winnerIndex = this.addTurn(this.winnerIndex, this.trick.determineWinnerPosition(this.trumpCard));
+      this.notifyTrickEnd(this.trick);
+      this.startTrick();
+    } else {
+      this.nextActionPlayer();
+      this.notifyActionPlayer();
+    }
+  }
+
+  getLead() {
+    if (this.trick !== undefined && this.trick.cards.length > 0) {
+      return this.trick.cards[0];
+    }
+    return undefined;
   }
 
   notifyPlayerChange() {
@@ -188,6 +234,14 @@ class Game {
 
   notifyTrumpSet() {
     this.players.forEach(player => player.send('trump', { card: this.trumpCard.json(), name: this.trumpSetter }));
+  }
+
+  notifyTrickEnd(trick) {
+    this.players.forEach(player => player.send('trick', { points: trick.calculatePoints() }));
+  }
+
+  notifyCardPlayed(card) {
+    this.players.forEach(player => player.send('play', { name: this.players[this.actionIndex].name, card }))
   }
 
   endGame() {

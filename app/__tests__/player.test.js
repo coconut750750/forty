@@ -2,7 +2,7 @@ var Player = require('../player');
 var Card = require('../card');
 
 function getLegalCardsIndicies(cards, trumpCard, leadCard) {
-  var player = new Player('test', undefined, false, () => trumpCard.rank, () => trumpCard.suit);
+  var player = new Player('test', undefined, false, () => ({ rank: trumpCard.rank, suit: trumpCard.suit }), () => leadCard);
   trumpCard.calibrate(trumpCard);
   leadCard.calibrate(leadCard);
 
@@ -10,11 +10,11 @@ function getLegalCardsIndicies(cards, trumpCard, leadCard) {
     card.calibrate(trumpCard);
     player.addCard(card);
   }
-  return player.legalPlayCards(leadCard);
+  return player.legalPlayCards();
 }
 
 function getSortedCards(cards, trumpRank, trumpSuit) {
-  var player = new Player('test', undefined, false, () => trumpRank, () => trumpSuit);
+  var player = new Player('test', undefined, false, () => ({ rank: trumpRank, suit: trumpSuit }));
 
   for (var card of cards) {
     player.addCard(card);
@@ -66,6 +66,17 @@ describe('list legal cards to play', () => {
       new Card('q', 'h'),
       new Card('5', 'h'),
       ], new Card('2', 'c'), new Card('a', 'c'))).toEqual([0]);
+  });
+
+  it('not trump suit but player has a trump rank with that suit', () => {
+    expect(getLegalCardsIndicies([
+      new Card('z', 'z'),
+      new Card('2', 'd'),
+      new Card('4', 'd'),
+      new Card('k', 'h'),
+      new Card('q', 'h'),
+      new Card('5', 'h'),
+      ], new Card('2', 'c'), new Card('a', 'd'))).toEqual([2]);
   });
 });
 

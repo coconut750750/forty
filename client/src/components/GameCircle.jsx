@@ -21,6 +21,9 @@ class GameCircle extends Component {
             player={this.props.rightPlayer}
             cards={this.props.rightCard ? [this.props.rightCard] : undefined}/>
         </div>
+
+        <Hand
+            cards={this.props.meCard ? [this.props.meCard] : undefined}/>
       </div>
     );
   }

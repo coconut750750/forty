@@ -3,24 +3,25 @@ import React, { Component } from 'react';
 import Hand from 'components/Hand';
 import GameCircle from 'components/GameCircle';
 
-class Deal extends Component {
+class Tricks extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      dealActive: false,
+      playActive: false,
     };
   }
 
   componentDidMount() {
     this.props.socket.on('action', data => {
-      this.setState({ dealActive: true });
+      this.setState({ playActive: true });
+      this.props.socket.emit('getHand', {});
     });
   }
 
-  draw() {
-    this.props.socket.emit('draw', {});
-    this.setState({ dealActive: false });
+  play(card) {
+    this.props.socket.emit('playCard', { card: card.json() });
+    this.setState({ playActive: false });
   }
 
   render() {
@@ -32,30 +33,25 @@ class Deal extends Component {
 
     return (
       <div>
-        <p>Dealing cards</p>
+        <p>Playing cards</p>
 
         <GameCircle
           acrossPlayer={acrossPlayer}
-          acrossCard={this.props.trumpSetter === acrossPlayer.name ? this.props.trumpCard : undefined}
+          acrossCard={this.props.cardsOnTable[acrossPlayer.name]}
           leftPlayer={leftPlayer}
-          leftCard={this.props.trumpSetter === leftPlayer.name ? this.props.trumpCard  : undefined}
+          leftCard={this.props.cardsOnTable[leftPlayer.name]}
           rightPlayer={rightPlayer}
-          rightCard={this.props.trumpSetter === rightPlayer.name ? this.props.trumpCard : undefined}
-          meCard={this.props.trumpSetter === mePlayer.name ? this.props.trumpCard : undefined}/>
+          rightCard={this.props.cardsOnTable[rightPlayer.name]}
+          meCard={this.props.cardsOnTable[mePlayer.name]}/>
 
         <Hand
           player={mePlayer}
           cards={this.props.hand}
-          click={ c => this.props.socket.emit('setTrump', { suit: c.suit }) }/>
-
-        <button type="button" className="btn btn-light" 
-          onClick={ () => this.draw() }
-          disabled={!this.state.dealActive}>Draw</button>
-        <br/>
+          click={ c => this.play(c) }/>
 
       </div>
     );
   }
 }
 
-export default Deal;
+export default Tricks;

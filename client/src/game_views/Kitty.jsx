@@ -85,7 +85,7 @@ class Kitty extends Component {
 
     return (
       <div>
-        <p>Dealing cards</p>
+        <p>Selecting 6 cards</p>
 
         <GameCircle
           acrossPlayer={acrossPlayer}

@@ -13,6 +13,6 @@ test('calibrate deck', () => {
 
   game.startRound();
   expect(game.deck[0].family).toBe(undefined);
-  game.setTrumpCard(new Card('2', 's'));
+  game.setTrumpSuit('s');
   expect(game.deck[0].family).not.toBe(undefined);
 })

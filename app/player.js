@@ -2,14 +2,14 @@ var Card = require('./card');
 var _ = require('lodash');
 
 class Player {
-  constructor(name, socket, isAdmin, getTrumpRank, getTrumpSuit) {
+  constructor(name, socket, isAdmin, getTrump, getLead) {
     this.name = name;
     this.socket = socket;
     this.isAdmin = isAdmin;
     this.hand = [];
 
-    this.getTrumpRank = getTrumpRank;
-    this.getTrumpSuit = getTrumpSuit;
+    this.getTrump = getTrump;
+    this.getLead = getLead;
 
     this.active = true;
   }
@@ -24,15 +24,19 @@ class Player {
     this.sortHand();
   }
 
-  // playCard(index, trick) {
-  //   trick.addCard(this.hand.splice(index, 1)[0]);
-  // }
+  popCard(card) {
+    const index = _.findIndex(this.hand, c => c.rank == card.rank && c.suit === card.suit);
+    card = this.hand[index];
+    this.hand.splice(index, 1);
+    return card;
+  }
 
   legalAllCards() {
     return _.range(this.hand.length);
   }
 
-  legalPlayCards(leadCard) {
+  legalPlayCards() {
+    const leadCard = this.getLead();
     if (leadCard === undefined) {
       return this.legalAllCards();
     }
@@ -45,7 +49,8 @@ class Player {
   }
 
   legalRevealCards() {
-    return _.map(_.keys(_.pickBy(this.hand, c => c.rank === this.getTrumpRank())), Number);
+    const { rank } = this.getTrump();
+    return _.map(_.keys(_.pickBy(this.hand, c => c.rank === rank)), Number);
   }
 
   json() {
@@ -63,7 +68,8 @@ class Player {
   }
 
   sortHand() {
-    this.hand = _.reverse(_.sortBy(this.hand, c => c.getSortOrder(this.getTrumpRank(), this.getTrumpSuit())));
+    const { rank, suit } = this.getTrump();
+    this.hand = _.reverse(_.sortBy(this.hand, c => c.getSortOrder(rank, suit)));
   }
 
   getHandData() {

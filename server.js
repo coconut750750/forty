@@ -116,6 +116,8 @@ app.io.on('connect', function (socket) {
       player.sendCardsToReveal();
     } else if (game.phase === 'kitty' && name === game.getActionPlayerName()) {
       player.sendCardsForKitty();
+    } else if (game.phase === 'tricks' && name === game.getActionPlayerName()) {
+      player.sendCardsToPlay();
     }
   });
 
@@ -138,6 +140,11 @@ app.io.on('connect', function (socket) {
 
   socket.on('setKitty', data => {
     game.setKitty(data.cards);
+    game.startTrick();
+  });
+
+  socket.on('playCard', data => {
+    game.playCard(data.card);
   });
 
   socket.on('disconnect', data => {

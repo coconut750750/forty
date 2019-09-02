@@ -5,6 +5,7 @@ import GameCode from 'components/GameCode';
 import Teams from 'game_views/Teams';
 import Deal from 'game_views/Deal';
 import Kitty from 'game_views/Kitty';
+import Trick from 'game_views/Trick';
 
 import Card from 'models/card';
 
@@ -20,6 +21,9 @@ class Table extends Component {
 
       trumpCard: undefined,
       trumpSetter: undefined,
+
+      cardsOnTable: {},
+      points: 0,
     };
   }
 
@@ -61,6 +65,21 @@ class Table extends Component {
       this.setState({ hand });
     });
 
+    this.props.socket.on('trick', data => {
+      const { points } = data.points;
+      this.setState({
+        cardsOnTable: {}, 
+        points,
+      });
+    });
+
+    this.props.socket.on('play', data => {
+      var { card, name } = data;
+      var { cardsOnTable } = this.state;
+      cardsOnTable[name] = new Card(card.rank, card.suit);
+      this.setState({ cardsOnTable });
+    });
+
     this.props.socket.emit('getPlayers', {});
     this.props.socket.emit('getPhase', {});
     this.props.socket.emit('getHand', {});
@@ -86,6 +105,13 @@ class Table extends Component {
                 meIndex={this.meIndex}
                 trumpCard={this.state.trumpCard}
                 trumpSetter={this.state.trumpSetter}/>,
+      tricks: <Trick
+                socket={this.props.socket}
+                hand={this.state.hand}
+                players={this.state.players}
+                meIndex={this.meIndex}
+                cardsOnTable={this.state.cardsOnTable}
+                points={this.state.points}/>,
     };
     return (
       <div>
