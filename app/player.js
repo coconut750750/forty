@@ -15,7 +15,7 @@ class Player {
   }
 
   addCards(cards) {
-    this.hand = this.hand + cards;
+    this.hand = this.hand.concat(cards);
     this.sortHand();
   }
 

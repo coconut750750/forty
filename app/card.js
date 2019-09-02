@@ -41,7 +41,11 @@ class Card {
     } else if (this.rank === SJOKER) {
       return 99;
     } else if (this.rank === trumpRank) {
-      return 98;
+      if (this.suit === trumpSuit) {
+        return 98;
+      } else {
+        return 97;
+      }
     } else if (this.suit === trumpSuit) {
       return 80 + RANKS.indexOf(this.rank);
     } else {

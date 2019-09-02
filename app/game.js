@@ -106,10 +106,10 @@ class Game {
       if (this.dealsLeft > 0) {
         this.actionIndex = (this.actionIndex + 1) % MAX_PLAYERS;
         this.notifyActionPlayer();
-      // } else {
-      //   this.players[this.startIndex].addCards(this.deck);
-      //   this.players[this.startIndex].sendHand();
-      //   this.deck = [];
+      } else if (!this.canSetTrumpSuit()) {
+        this.players[this.startIndex].addCards(this.deck);
+        this.players[this.startIndex].sendHand();
+        this.deck = [];
       }
     }
   }
