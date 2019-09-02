@@ -7,7 +7,7 @@ var { newDeck, calibrate } = require('./deckutils');
 const MAX_PLAYERS = 4;
 const STARTING_LEVEL = 2;
 const KITTY_CARDS = 6;
-const PHASES = ['teams', 'deal'];
+const PHASES = ['teams', 'deal', 'kitty', 'tricks'];
 
 class Game {
   constructor(code, onEnd) {
@@ -86,17 +86,27 @@ class Game {
     this.deck = newDeck();
     this.trumpCard = undefined;
     this.trumpSetter = undefined;
+    this.kitty = [];
     this.level = this.topTeam === undefined ? STARTING_LEVEL : this.teamLevels[this.topTeam];
     this.dealsLeft = this.deck.length - KITTY_CARDS;
     this.phase = PHASES[1];
-    this.notifyPhaseChange();
-  }
 
-  startDeal() {
     if (this.startIndex === undefined) {
       this.startIndex = Math.floor(Math.random() * MAX_PLAYERS);
     }
     this.actionIndex = this.startIndex;
+
+    this.notifyPhaseChange();
+  }
+
+  getActionPlayerName() {
+    if (this.actionIndex === undefined) {
+      return undefined;
+    }
+    return this.players[this.actionIndex].name;
+  }
+
+  startDeal() {
     this.notifyActionPlayer();
   }
 
@@ -106,13 +116,11 @@ class Game {
       this.players[this.actionIndex].sendHand();
       this.dealsLeft--;
 
-      if (this.dealsLeft > 0) {
+      if (this.dealsLeft === 0 && !this.canSetTrumpSuit()) {
+        this.startKitty();
+      } else {
         this.actionIndex = (this.actionIndex + 1) % MAX_PLAYERS;
         this.notifyActionPlayer();
-      } else if (!this.canSetTrumpSuit()) {
-        this.players[this.startIndex].addCards(this.deck);
-        this.players[this.startIndex].sendHand();
-        this.deck = [];
       }
     }
   }
@@ -135,6 +143,29 @@ class Game {
 
   getTrumpSuit() {
     return this.trumpCard === undefined ? undefined : this.trumpCard.suit;
+  }
+
+  startKitty() {
+    this.actionIndex = this.startIndex;
+    this.phase = PHASES[2];
+    this.notifyPhaseChange();
+
+    this.players[this.actionIndex].addCards(this.deck);
+    this.players[this.actionIndex].sendHand();
+    this.deck = [];
+
+    this.notifyActionPlayer();
+  }
+
+  setKitty(cards) {
+    cards.map(c => new Card(c.rank, c.suit));
+    this.kitty = cards;
+    console.log(this.kitty);
+
+    this.phase = PHASES[3];
+    this.notifyPhaseChange();
+
+    this.notifyActionPlayer();
   }
 
   notifyPlayerChange() {

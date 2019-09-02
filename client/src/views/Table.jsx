@@ -4,6 +4,7 @@ import GameCode from 'components/GameCode';
 
 import Teams from 'game_views/Teams';
 import Deal from 'game_views/Deal';
+import Kitty from 'game_views/Kitty';
 
 import Card from 'models/card';
 
@@ -70,14 +71,21 @@ class Table extends Component {
     const game_views = {
       teams:  <Teams 
                 players={this.state.players}
-                socket={this.props.socket}/>,
+                socket={this.props.socket} />,
       deal:   <Deal
                 socket={this.props.socket}
                 hand={this.state.hand}
                 players={this.state.players}
                 meIndex={this.meIndex}
                 trumpCard={this.state.trumpCard}
-                trumpSetter={this.state.trumpSetter}/>,
+                trumpSetter={this.state.trumpSetter} />,
+      kitty:  <Kitty
+                socket={this.props.socket}
+                hand={this.state.hand}
+                players={this.state.players}
+                meIndex={this.meIndex}
+                trumpCard={this.state.trumpCard}
+                trumpSetter={this.state.trumpSetter} />,
     };
     return (
       <div>

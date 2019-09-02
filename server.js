@@ -93,7 +93,9 @@ app.io.on('connect', function (socket) {
   });
 
   socket.on('readyForAction', data => {
-    game.notifyActionPlayer();
+    if (name === game.getActionPlayerName()) {
+      game.notifyActionPlayer();
+    }
   });
 
   socket.on('permutePlayers', data => {
@@ -112,6 +114,8 @@ app.io.on('connect', function (socket) {
   socket.on('getLegalCards', data => {
     if (game.canSetTrumpSuit()) {
       player.sendCardsToReveal();
+    } else if (game.phase === 'kitty' && name === game.getActionPlayerName()) {
+      player.sendCardsForKitty();
     }
   });
 
@@ -130,6 +134,10 @@ app.io.on('connect', function (socket) {
     if (game.trumpCard !== undefined) {
       socket.emit('trump', { card: game.trumpCard.json(), name: game.trumpSetter });
     }
+  });
+
+  socket.on('setKitty', data => {
+    game.setKitty(data.cards);
   });
 
   socket.on('disconnect', data => {

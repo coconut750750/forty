@@ -28,14 +28,18 @@ class Player {
   //   trick.addCard(this.hand.splice(index, 1)[0]);
   // }
 
+  legalAllCards() {
+    return _.range(this.hand.length);
+  }
+
   legalPlayCards(leadCard) {
     if (leadCard === undefined) {
-      return _.range(this.hand.length);
+      return this.legalAllCards();
     }
 
     var cardsInFamily = _.map(_.keys(_.pickBy(this.hand, c => c.family === leadCard.family)), Number);
     if (cardsInFamily.length === 0) {
-      return _.range(this.hand.length);
+      return this.legalAllCards();
     }
     return cardsInFamily;
   }
@@ -62,12 +66,20 @@ class Player {
     this.hand = _.reverse(_.sortBy(this.hand, c => c.getSortOrder(this.getTrumpRank(), this.getTrumpSuit())));
   }
 
+  getHandData() {
+    return this.hand.map(card => card.json());
+  }
+
   sendHand() {
-    this.send('hand', { hand: this.hand.map(card => card.json()) });
+    this.send('hand', { hand: this.getHandData() });
   }
 
   sendCardsToReveal() {
     this.send('legal', { cards: this.legalRevealCards()});
+  }
+
+  sendCardsForKitty() {
+    this.send('legal', { cards: this.legalAllCards()});
   }
 
   sendCardsToPlay() {

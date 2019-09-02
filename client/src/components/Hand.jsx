@@ -6,7 +6,7 @@ class Hand extends Component {
   render() {
     return (
       <div>
-        <PlayerName player={this.props.player} />
+        {this.props.player && <PlayerName player={this.props.player} />}
         <br/>
         <div className="hand hhand-compact active-hand">
           {this.props.cards && this.props.cards.map(c => (

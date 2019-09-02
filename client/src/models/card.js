@@ -5,6 +5,10 @@ export default class Card {
     this.highlight = highlight;
   }
 
+  equals(o) {
+    return this.rank === o.rank && this.suit === o.suit;
+  }
+
   json() {
     return { rank: this.rank, suit: this.suit };
   }
