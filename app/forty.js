@@ -7,14 +7,15 @@ class Forty {
 
     if (dev) {
       const code = 'ffff';
-      const newGame = new Game('ffff', () => this.endGame('ffff'));
-      this.games['ffff'] = newGame;
+      const newGame = new Game(code, () => this.endGame(code));
       newGame.addPlayer('player1', undefined);
       newGame.addPlayer('player2', undefined);
       newGame.addPlayer('player3', undefined);
       newGame.addPlayer('player4', undefined);
       newGame.start();
+      newGame.startIndex = 0;
       newGame.deactivatePlayer('player1');
+      this.games[code] = newGame;
     }
   }
 

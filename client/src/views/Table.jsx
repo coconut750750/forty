@@ -13,10 +13,18 @@ class Table extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      players: [],
       phase: undefined,
+      players: [],
       hand: [],
+
+      trumpCard: undefined,
     };
+  }
+
+  resetGameData() {
+    this.setState({
+      trumpCard: undefined,
+    });
   }
 
   componentDidMount() {
@@ -27,6 +35,10 @@ class Table extends Component {
     this.props.socket.on('phase', data => {
       this.setState({ phase: data.phase });
       this.props.socket.emit('readyForAction', {});
+    });
+
+    this.props.socket.on('setTrump', data => {
+      this.setState({ trump: new Card(data.rank, data.suit) });
     });
 
     this.props.socket.on('hand', data => {

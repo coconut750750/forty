@@ -30,7 +30,6 @@ class Deal extends Component {
         <button type="button" className="btn btn-light" 
           onClick={ () => this.draw() }
           disabled={!this.state.dealActive}>Draw</button>
-
         <br/>
 
         <Hand 

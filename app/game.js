@@ -92,7 +92,9 @@ class Game {
   }
 
   startDeal() {
-    this.startIndex = this.startIndex || Math.floor(Math.random() * MAX_PLAYERS);
+    if (this.startIndex === undefined) {
+      this.startIndex = Math.floor(Math.random() * MAX_PLAYERS);
+    }
     this.actionIndex = this.startIndex;
     this.notifyActionPlayer();
   }
