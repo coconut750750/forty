@@ -34,14 +34,19 @@ class Deal extends Component {
         <p>Dealing cards</p>
 
         <Hand
-          player={acrossPlayer}/>
+          player={acrossPlayer}
+          cards={this.props.trumpSetter === acrossPlayer.name ? [this.props.trumpCard] : undefined}/>
 
         <div className="d-flex justify-content-center">
           <Hand
-            player={leftPlayer}/>
+            player={leftPlayer}
+            cards={this.props.trumpSetter === leftPlayer.name ? [this.props.trumpCard]  : undefined}/>
+
           <div className="col-4"></div>
+
           <Hand
-            player={rightPlayer}/>
+            player={rightPlayer}
+            cards={this.props.trumpSetter === rightPlayer.name ? [this.props.trumpCard]  : undefined}/>
         </div>
 
         <Hand

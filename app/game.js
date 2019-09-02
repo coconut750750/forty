@@ -84,7 +84,8 @@ class Game {
 
   startRound() {
     this.deck = newDeck();
-    this.trumpSuit = undefined;
+    this.trumpCard = undefined;
+    this.trumpSetter = undefined;
     this.level = this.topTeam === undefined ? STARTING_LEVEL : this.teamLevels[this.topTeam];
     this.dealsLeft = this.deck.length - KITTY_CARDS;
     this.phase = PHASES[1];
@@ -117,14 +118,13 @@ class Game {
   }
 
   canSetTrumpSuit() {
-    return this.trumpSuit === undefined;
+    return this.trumpCard === undefined;
   }
 
   setTrumpSuit(trumpSuit) {
-    this.trumpSuit = trumpSuit;
-    const trumpCard = new Card(this.level, this.trumpSuit);
-    calibrate(this.deck, trumpCard);
-    this.players.forEach(player => calibrate(player.hand, trumpCard));
+    this.trumpCard = new Card(this.level, trumpSuit);
+    calibrate(this.deck, this.trumpCard);
+    this.players.forEach(player => calibrate(player.hand, this.trumpCard));
     this.players.forEach(player => player.sortHand());
     this.players.forEach(player => player.sendHand());
   }
@@ -134,7 +134,7 @@ class Game {
   }
 
   getTrumpSuit() {
-    return this.trumpSuit;
+    return this.trumpCard === undefined ? undefined : this.trumpCard.suit;
   }
 
   notifyPlayerChange() {
@@ -153,6 +153,10 @@ class Game {
     if (this.actionIndex !== undefined) {
       this.players[this.actionIndex].send('action', {});
     }
+  }
+
+  notifyTrumpSet() {
+    this.players.forEach(player => player.send('trump', { card: this.trumpCard.json(), name: this.trumpSetter }));
   }
 
   endGame() {

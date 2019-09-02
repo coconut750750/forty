@@ -122,6 +122,14 @@ app.io.on('connect', function (socket) {
   socket.on('setTrump', data => {
     const { suit } = data;
     game.setTrumpSuit(suit);
+    game.trumpSetter = name;
+    game.notifyTrumpSet();
+  });
+
+  socket.on('getTrump', data => {
+    if (game.trumpCard !== undefined) {
+      socket.emit('trump', { card: game.trumpCard.json(), name: game.trumpSetter });
+    }
   });
 
   socket.on('disconnect', data => {

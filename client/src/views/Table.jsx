@@ -18,19 +18,21 @@ class Table extends Component {
       hand: [],
 
       trumpCard: undefined,
+      trumpSetter: undefined,
     };
   }
 
   resetGameData() {
     this.setState({
       trumpCard: undefined,
+      trumpSetter: undefined,
     });
   }
 
   componentDidMount() {
     this.props.socket.on('players', data => {
       this.setState({ players: data.players });
-      this.meIndex = _.findIndex(data.players, p => p.name = this.props.name);
+      this.meIndex = _.findIndex(data.players, { name: this.props.name });
     });
 
     this.props.socket.on('phase', data => {
@@ -38,8 +40,11 @@ class Table extends Component {
       this.props.socket.emit('readyForAction', {});
     });
 
-    this.props.socket.on('setTrump', data => {
-      this.setState({ trump: new Card(data.rank, data.suit) });
+    this.props.socket.on('trump', data => {
+      this.setState({
+        trumpCard: new Card(data.card.rank, data.card.suit),
+        trumpSetter: data.name,
+      });
     });
 
     this.props.socket.on('hand', data => {
@@ -58,6 +63,7 @@ class Table extends Component {
     this.props.socket.emit('getPlayers', {});
     this.props.socket.emit('getPhase', {});
     this.props.socket.emit('getHand', {});
+    this.props.socket.emit('getTrump', {});
   }
 
   render() {
@@ -69,7 +75,9 @@ class Table extends Component {
                 socket={this.props.socket}
                 hand={this.state.hand}
                 players={this.state.players}
-                meIndex={this.meIndex}/>,
+                meIndex={this.meIndex}
+                trumpCard={this.state.trumpCard}
+                trumpSetter={this.state.trumpSetter}/>,
     };
     return (
       <div>
