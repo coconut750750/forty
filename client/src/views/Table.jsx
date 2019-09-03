@@ -23,6 +23,8 @@ class Table extends Component {
       meIndex: -1,
       hand: [],
 
+      trumpCard: undefined,
+
       cardsOnTable: {},
       centerCards: [],
       points: 0,
@@ -33,6 +35,7 @@ class Table extends Component {
 
   resetRoundData() {
     this.setState({
+      trumpCard: undefined,
       cardsOnTable: {},
       centerCards: [],
       points: 0,
@@ -64,8 +67,9 @@ class Table extends Component {
     });
 
     this.props.socket.on('trump', data => {
-      var cardsOnTable = { [data.name]: new Card(data.card.rank, data.card.suit) };
-      this.setState({ cardsOnTable });
+      const trumpCard = new Card(data.card.rank, data.card.suit)
+      var cardsOnTable = { [data.name]: trumpCard };
+      this.setState({ cardsOnTable, trumpCard });
     });
 
     this.props.socket.on('hand', data => {
@@ -128,14 +132,15 @@ class Table extends Component {
 
     return (
       <GameCircle
-          acrossPlayer={acrossPlayer}
-          acrossCard={this.state.cardsOnTable[acrossPlayer.name]}
-          leftPlayer={leftPlayer}
-          leftCard={this.state.cardsOnTable[leftPlayer.name]}
-          rightPlayer={rightPlayer}
-          rightCard={this.state.cardsOnTable[rightPlayer.name]}
-          meCard={this.state.cardsOnTable[mePlayer.name]}
-          centerCards={this.state.centerCards}/>
+        trumpCard={this.state.trumpCard}
+        acrossPlayer={acrossPlayer}
+        acrossCard={this.state.cardsOnTable[acrossPlayer.name]}
+        leftPlayer={leftPlayer}
+        leftCard={this.state.cardsOnTable[leftPlayer.name]}
+        rightPlayer={rightPlayer}
+        rightCard={this.state.cardsOnTable[rightPlayer.name]}
+        meCard={this.state.cardsOnTable[mePlayer.name]}
+        centerCards={this.state.centerCards}/>
     );
   }
 

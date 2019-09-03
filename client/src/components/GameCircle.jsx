@@ -6,9 +6,18 @@ class GameCircle extends Component {
   render() {
     return (
       <div>
-        <Hand
-          player={this.props.acrossPlayer}
-          cards={this.props.acrossCard ? [this.props.acrossCard] : undefined}/>
+        <div className="d-flex justify-content-center">
+          <div className="col-4"></div>
+
+          <Hand
+            className="col-4"
+            player={this.props.acrossPlayer}
+            cards={this.props.acrossCard ? [this.props.acrossCard] : undefined}/>
+
+          <Hand
+            className="col-4"
+            cards={this.props.trumpCard ? [this.props.trumpCard] : undefined}/>
+        </div>
 
         <div className="d-flex justify-content-center">
           <Hand
