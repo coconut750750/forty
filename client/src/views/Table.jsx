@@ -27,6 +27,8 @@ class Table extends Component {
       centerCards: [],
       points: 0,
     };
+
+    this.getCenterCards = () => [];
   }
 
   resetRoundData() {
@@ -35,6 +37,12 @@ class Table extends Component {
       centerCards: [],
       points: 0,
     });
+  }
+
+  startNewTrick() {
+    var players = this.state.players;
+    _.forEach(players, p => p.resetWin());
+    this.setState({ players, centerCards: this.getCenterCards(), });
   }
 
   componentDidMount() {
@@ -77,19 +85,20 @@ class Table extends Component {
       var players = this.state.players;
       players[data.winner].win();
       this.setState({ points: data.points, players });
+
+      var centerCards = _.cloneDeep(this.state.centerCards);
+      data.cards.forEach(c => centerCards.push(new Card(c.rank, c.suit)));
+      this.getCenterCards = () => centerCards;
     });
 
     this.props.socket.on('play', data => {
       var { trick } = data;
       var cardsOnTable = {};
-      _.forEach(trick, (card, name) => {
-        cardsOnTable[name] = new Card(card.rank, card.suit);
-      });
+      _.forEach(trick, (card, name) => { cardsOnTable[name] = new Card(card.rank, card.suit); });
       this.setState({ cardsOnTable });
+
       if (Object.keys(cardsOnTable).length === 1) {
-        var players = this.state.players;
-        _.forEach(players, p => p.resetWin());
-        this.setState({ players });
+        this.startNewTrick();
       }
     });
 

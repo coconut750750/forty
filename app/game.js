@@ -90,6 +90,10 @@ class Game {
     this.notifyPlayerChange();
   }
 
+  onDefense(index) {
+    return index % 2 === this.defenseTeam;
+  }
+
   startRound() {
     this.deck = newDeck();
     this.points = 0;
@@ -221,7 +225,7 @@ class Game {
 
     if (this.trick.cards.length === MAX_PLAYERS) {
       this.winnerIndex = this.addTurn(this.winnerIndex, this.trick.determineWinnerPosition(this.trumpCard));
-      if (this.winnerIndex % 2 === this.defenseTeam) {
+      if (!this.onDefense(this.winnerIndex)) {
         this.points += this.trick.calculatePoints();
       }
       this.notifyTrickEnd();
@@ -300,7 +304,11 @@ class Game {
   }
 
   notifyTrickEnd() {
-    this.players.forEach(player => player.send('trick', { points: this.points, winner: this.winnerIndex }));
+    this.players.forEach(player => player.send('trick', {
+      points: this.points,
+      cards: !this.onDefense(this.winnerIndex) ? this.trick.getPointCards() : [],
+      winner: this.winnerIndex,
+    }));
   }
 
   notifyTrickUpdate() {
