@@ -12,14 +12,16 @@ class GameCircle extends Component {
 
         <div className="d-flex justify-content-center">
           <Hand
-            className="col-4"
+            className="col-3"
             player={this.props.leftPlayer}
             cards={this.props.leftCard ? [this.props.leftCard] : undefined}/>
 
-          <div className="col-4"></div>
+         <Hand
+            className="col-6"
+            cards={this.props.centerCards}/>
 
           <Hand
-            className="col-4"
+            className="col-3"
             player={this.props.rightPlayer}
             cards={this.props.rightCard ? [this.props.rightCard] : undefined}/>
         </div>

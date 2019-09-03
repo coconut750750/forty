@@ -28,7 +28,7 @@ class Tricks extends Component {
   render() {
     return (
       <div>
-        <p>Playing cards</p>
+        <p>Playing tricks</p>
 
         {this.props.children}
 
