@@ -1,11 +1,29 @@
 import React, { Component } from 'react';
 
 class PlayerName extends Component {
+  getBadgeClass() {
+    console.log(this.props.player, this.props.player.isDefending());
+    if (!this.props.player.active) {
+      return "badge-light";
+    } else if (this.props.player.team !== undefined) {
+      return this.props.player.isDefending() ? "badge-primary" : "badge-secondary";
+    } else {
+      return "badge-dark";
+    }
+  }
+
+  getStyle() {
+    if (this.props.player.winner) {
+      return { boxShadow: "0px 0px 4px 2px green" };
+    }
+    return {};
+  }
+
   render() {
-    var badgeColor = this.props.player.active ? "badge-dark" : "badge-light";
-    badgeColor = this.props.player.winner ? "badge-success" : badgeColor;
     return (
-      <div className={`badge badge-secondary m-2 ${badgeColor}`}>{ this.props.player.name }</div>
+      <div
+        className={`badge m-2 ${this.getBadgeClass()}`}
+        style={this.getStyle()}>{ this.props.player.name }</div>
     );
   }
 }

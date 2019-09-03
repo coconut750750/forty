@@ -58,6 +58,7 @@ class Player {
       name: this.name,
       isAdmin: this.isAdmin,
       active: this.active,
+      team: this.team,
     };
   }
 

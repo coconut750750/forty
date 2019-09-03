@@ -41,13 +41,16 @@ class Table extends Component {
 
   componentDidMount() {
     this.props.socket.on('players', data => {
-      this.setState({ players: data.players.map(p => new Player(p.name, p.isAdmin, p.active)) });
+      this.setState({ players: data.players.map(p => new Player(p.name, p.isAdmin, p.active, p.team)) });
       this.meIndex = _.findIndex(data.players, { name: this.props.name });
     });
 
     this.props.socket.on('phase', data => {
       this.setState({ phase: data.phase });
       this.props.socket.emit('readyForAction', {});
+      if (data.phase === 'deal') {
+        this.resetRoundData();
+      }
     });
 
     this.props.socket.on('trump', data => {
@@ -123,8 +126,7 @@ class Table extends Component {
                   cardsOnTable={this.state.cardsOnTable}
                   points={this.state.points}/>,
       endRound: <RoundSummary
-                  socket={this.props.socket}
-                  click={ () => this.resetRoundData() }/>,
+                  socket={this.props.socket}/>,
     };
     return (
       <div>

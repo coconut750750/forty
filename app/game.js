@@ -102,6 +102,10 @@ class Game {
     this.dealsLeft = this.deck.length - KITTY_CARDS;
     this.phase = PHASES[1];
 
+    this.players.forEach((player, index) => {
+      player.team = index % 2 === this.defenseTeam;
+    });
+
     this.actionIndex = this.startIndex;
     this.notifyPhaseChange();
   }

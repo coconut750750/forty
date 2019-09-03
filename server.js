@@ -104,6 +104,7 @@ app.io.on('connect', function (socket) {
 
   socket.on('startRound', data => {
     game.startRound();
+    game.notifyPlayerChange();
     game.startDeal();
   });
 
