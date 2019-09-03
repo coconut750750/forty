@@ -57,7 +57,7 @@ class Game {
   removePlayer(playerName) {
     var removedPlayer = _.remove(this.players, p => p.name == playerName);
     if (removedPlayer[0].isAdmin) {
-      this.endGame();
+      this.end();
     } else {
       this.notifyPlayerChange();
     }
@@ -82,8 +82,6 @@ class Game {
     this.teamNextStarts[this.defenseTeam] = (this.startIndex + 2) % MAX_PLAYERS;
     this.teamNextStarts[1 - this.defenseTeam] = (this.startIndex + 1) % MAX_PLAYERS;
 
-    this.level = this.teamLevels[this.defenseTeam];
-
     this.notifyGameStart();
   }
 
@@ -95,6 +93,7 @@ class Game {
   startRound() {
     this.deck = newDeck();
     this.points = 0;
+    this.level = this.teamLevels[this.defenseTeam];
 
     this.trumpCard = undefined;
     this.trumpSetter = undefined;
@@ -195,6 +194,7 @@ class Game {
       this.endRound();
     }
 
+    // first trick of the round
     if (this.winnerIndex === undefined) {
       this.actionIndex = this.startIndex;
       this.winnerIndex = this.startIndex;
@@ -241,6 +241,8 @@ class Game {
 
       this.notifyKittyReveal();
     }
+    
+    this.winnerIndex = undefined;
     this.updateLevels();
     this.updateStartIndex();
 
