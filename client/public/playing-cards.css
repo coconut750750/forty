@@ -62,9 +62,11 @@ img.playing-card {
     margin-left: 0px;
 }
 .hhand-compact img.playing-card { 
-    margin-top: 10px;
     margin-left: -52px;
     transform: translateY(0px);
+}
+.hhand-compact.active-hand img.playing-card { 
+    margin-top: 10px;
 }
 .hhand-compact.active-hand img.playing-card:hover { 
     padding-top: 0px;

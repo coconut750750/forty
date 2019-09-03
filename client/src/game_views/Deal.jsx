@@ -30,6 +30,7 @@ class Deal extends Component {
         {this.props.children}
 
         <Hand
+          isActive
           player={this.props.mePlayer}
           cards={this.props.hand}
           click={ c => this.props.socket.emit('setTrump', { suit: c.suit }) }/>

@@ -33,6 +33,7 @@ class Tricks extends Component {
         {this.props.children}
 
         <Hand
+          isActive
           player={this.props.mePlayer}
           cards={this.props.hand}
           click={ c => this.play(c) }/>

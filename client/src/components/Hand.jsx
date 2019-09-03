@@ -8,7 +8,7 @@ class Hand extends Component {
       <div className={this.props.className}>
         {this.props.player && <PlayerName player={this.props.player} />}
         <br/>
-        <div className="hand hhand-compact active-hand">
+        <div className={`hand hhand-compact ${this.props.isActive && "active-hand"}`}>
           {this.props.cards && this.props.cards.map(c => (
             <img
               className={`playing-card ${c.highlight ? "highlight" : ""}`}

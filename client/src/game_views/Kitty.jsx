@@ -53,11 +53,13 @@ class Kitty extends Component {
     if (this.state.kittyActive) {
       return [
         <Hand
+          isActive
           player={mePlayer}
           cards={this.getHandWithoutKitty()}
           click={ c => this.addToKitty(c) }/>,
         <br/>,
         <Hand
+          isActive
           cards={this.state.kitty}
           click={ c => this.removeFromKitty(c) }/>,
         <button type="button" className="btn btn-light" 
@@ -68,6 +70,7 @@ class Kitty extends Component {
     } else {
       return [
         <Hand
+          isActive
           player={mePlayer}
           cards={this.props.hand}/>,
         <br/>,
