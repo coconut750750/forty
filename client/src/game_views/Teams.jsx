@@ -24,7 +24,7 @@ class Teams extends Component {
         <PlayerList players={team2}/>
 
         <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('permutePlayers', {}) }>Change Teams</button>
-        <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('confirmTeams', {}) }>Confirm</button>
+        <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('startRound', {}) }>Confirm</button>
       </div>
     );
   }

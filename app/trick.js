@@ -7,9 +7,9 @@ class Trick {
     this.names = [];
   }
 
-  addCard(name, card) {
-    this.names.push(name);
+  addCard(card, name) {
     this.cards.push(card);
+    this.names.push(name);
   }
 
   determineWinnerPosition(trumpCard) {

@@ -6,6 +6,7 @@ import Teams from 'game_views/Teams';
 import Deal from 'game_views/Deal';
 import Kitty from 'game_views/Kitty';
 import Trick from 'game_views/Trick';
+import RoundSummary from 'game_views/RoundSummary';
 
 import Card from 'models/card';
 import Player from 'models/player';
@@ -28,10 +29,13 @@ class Table extends Component {
     };
   }
 
-  resetGameData() {
+  resetRoundData() {
     this.setState({
       trumpCard: undefined,
       trumpSetter: undefined,
+
+      cardsOnTable: {},
+      points: 0,
     });
   }
 
@@ -94,30 +98,33 @@ class Table extends Component {
 
   render() {
     const game_views = {
-      teams:  <Teams 
-                players={this.state.players}
-                socket={this.props.socket}/>,
-      deal:   <Deal
-                socket={this.props.socket}
-                hand={this.state.hand}
-                players={this.state.players}
-                meIndex={this.meIndex}
-                trumpCard={this.state.trumpCard}
-                trumpSetter={this.state.trumpSetter}/>,
-      kitty:  <Kitty
-                socket={this.props.socket}
-                hand={this.state.hand}
-                players={this.state.players}
-                meIndex={this.meIndex}
-                trumpCard={this.state.trumpCard}
-                trumpSetter={this.state.trumpSetter}/>,
-      tricks: <Trick
-                socket={this.props.socket}
-                hand={this.state.hand}
-                players={this.state.players}
-                meIndex={this.meIndex}
-                cardsOnTable={this.state.cardsOnTable}
-                points={this.state.points}/>,
+      teams:    <Teams 
+                  players={this.state.players}
+                  socket={this.props.socket}/>,
+      deal:     <Deal
+                  socket={this.props.socket}
+                  hand={this.state.hand}
+                  players={this.state.players}
+                  meIndex={this.meIndex}
+                  trumpCard={this.state.trumpCard}
+                  trumpSetter={this.state.trumpSetter}/>,
+      kitty:    <Kitty
+                  socket={this.props.socket}
+                  hand={this.state.hand}
+                  players={this.state.players}
+                  meIndex={this.meIndex}
+                  trumpCard={this.state.trumpCard}
+                  trumpSetter={this.state.trumpSetter}/>,
+      tricks:   <Trick
+                  socket={this.props.socket}
+                  hand={this.state.hand}
+                  players={this.state.players}
+                  meIndex={this.meIndex}
+                  cardsOnTable={this.state.cardsOnTable}
+                  points={this.state.points}/>,
+      endRound: <RoundSummary
+                  socket={this.props.socket}
+                  click={ () => this.resetRoundData() }/>,
     };
     return (
       <div>

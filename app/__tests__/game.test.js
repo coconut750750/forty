@@ -13,6 +13,7 @@ test('calibrate deck', () => {
 
   game.startRound();
   expect(game.deck[0].family).toBe(undefined);
+  game.level = 2;
   game.setTrumpSuit('s');
   expect(game.deck[0].family).not.toBe(undefined);
 })

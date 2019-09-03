@@ -102,7 +102,7 @@ app.io.on('connect', function (socket) {
     game.permute();
   });
 
-  socket.on('confirmTeams', data => {
+  socket.on('startRound', data => {
     game.startRound();
     game.startDeal();
   });
