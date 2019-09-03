@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 class PlayerName extends Component {
   getBadgeClass() {
-    console.log(this.props.player, this.props.player.isDefending());
     if (!this.props.player.active) {
       return "badge-light";
     } else if (this.props.player.team !== undefined) {

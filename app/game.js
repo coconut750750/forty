@@ -97,8 +97,6 @@ class Game {
 
     this.trumpCard = undefined;
     this.trumpSetter = undefined;
-    this.kitty = [];
-    this.dealsLeft = this.deck.length - KITTY_CARDS;
     this.phase = PHASES[1];
 
     this.players.forEach((player, index) => {
@@ -125,6 +123,8 @@ class Game {
   }
 
   startDeal() {
+    this.kitty = [];
+    this.dealsLeft = this.deck.length - KITTY_CARDS;
     this.notifyActionPlayer();
   }
 
@@ -134,8 +134,10 @@ class Game {
       this.players[this.actionIndex].sendHand();
       this.dealsLeft--;
 
-      if (this.dealsLeft === 0 && !this.canSetTrumpSuit()) {
-        this.startKitty();
+      if (this.dealsLeft === 0) {
+        if (this.trumpCard !== undefined) {
+          this.startKitty();
+        }
       } else {
         this.nextActionPlayer();
         this.notifyActionPlayer();
@@ -155,6 +157,10 @@ class Game {
     this.players.forEach(player => calibrate(player.hand, this.trumpCard));
     this.players.forEach(player => player.sortHand());
     this.players.forEach(player => player.sendHand());
+
+    if (this.dealsLeft === 0) {
+      this.startKitty();
+    }
   }
 
   getTrump() {
@@ -241,7 +247,7 @@ class Game {
 
       this.notifyKittyReveal();
     }
-    
+
     this.winnerIndex = undefined;
     this.updateLevels();
     this.updateStartIndex();

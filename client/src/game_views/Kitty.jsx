@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Hand from 'components/Hand';
-import GameCircle from 'components/GameCircle';
 
 var _ = require('lodash');
 
@@ -77,25 +76,13 @@ class Kitty extends Component {
   }
 
   render() {
-    const nPlayers = this.props.players.length;
-    const mePlayer = this.props.players[this.props.meIndex];
-    const rightPlayer = this.props.players[(this.props.meIndex + 1) % nPlayers];
-    const acrossPlayer = this.props.players[(this.props.meIndex + 2) % nPlayers];
-    const leftPlayer = this.props.players[(this.props.meIndex + 3) % nPlayers];
-
     return (
       <div>
         <p>Selecting 6 cards</p>
 
-        <GameCircle
-          acrossPlayer={acrossPlayer}
-          acrossCard={this.props.trumpSetter === acrossPlayer.name ? this.props.trumpCard : undefined}
-          leftPlayer={leftPlayer}
-          leftCard={this.props.trumpSetter === leftPlayer.name ? this.props.trumpCard  : undefined}
-          rightPlayer={rightPlayer}
-          rightCard={this.props.trumpSetter === rightPlayer.name ? this.props.trumpCard  : undefined}/>
+        {this.props.children}
 
-        {this.renderKitty(mePlayer)}
+        {this.renderKitty(this.props.mePlayer)}
 
       </div>
     );
