@@ -5,7 +5,7 @@ import PlayerName from 'components/PlayerName';
 class Hand extends Component {
   render() {
     return (
-      <div>
+      <div className={this.props.className}>
         {this.props.player && <PlayerName player={this.props.player} />}
         <br/>
         <div className="hand hhand-compact active-hand">

@@ -147,6 +147,10 @@ app.io.on('connect', function (socket) {
     game.playCard(data.card);
   });
 
+  socket.on('getPlay', data => {
+    socket.emit('play', { trick: game.trick.json() });
+  });
+
   socket.on('disconnect', data => {
     if (game.started && !player.isAdmin) {
       game.deactivatePlayer(name);

@@ -242,7 +242,7 @@ class Game {
   }
 
   notifyTrickUpdate() {
-    this.players.forEach(player => player.send('play', { trick: this.trick.json() }))
+    this.players.forEach(player => player.send('play', { trick: this.trick.json() }));
   }
 
   endGame() {

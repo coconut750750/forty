@@ -17,6 +17,8 @@ class Tricks extends Component {
       this.setState({ playActive: true });
       this.props.socket.emit('getHand', {});
     });
+
+    this.props.socket.emit('getPlay', {});
   }
 
   play(card) {
