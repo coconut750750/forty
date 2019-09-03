@@ -200,7 +200,7 @@ class Game {
 
     if (this.trick.cards.length === MAX_PLAYERS) {
       this.winnerIndex = this.addTurn(this.winnerIndex, this.trick.determineWinnerPosition(this.trumpCard));
-      this.notifyTrickEnd(this.trick);
+      this.notifyTrickEnd();
       this.startTrick();
     } else {
       this.nextActionPlayer();
@@ -238,7 +238,7 @@ class Game {
   }
 
   notifyTrickEnd(trick) {
-    this.players.forEach(player => player.send('trick', { points: trick.calculatePoints() }));
+    this.players.forEach(player => player.send('trick', { points: this.trick.calculatePoints(), winner: this.winnerIndex }));
   }
 
   notifyTrickUpdate() {

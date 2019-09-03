@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import GameCode from 'components/GameCode';
 import PlayerList from 'components/PlayerList';
 
+import Player from 'models/player';
+
 import './Lobby.css';
 
 class Lobby extends Component {
@@ -17,7 +19,7 @@ class Lobby extends Component {
   componentDidMount() {
     this.props.socket.emit('join', { name: this.props.name, gameCode: this.props.gameCode });
     this.props.socket.on('players', data => {
-      this.setState({ players: data.players });
+      this.setState({ players: data.players.map(p => new Player(p.name, p.isAdmin, p.active)) });
     });
 
     this.props.socket.on('startFail', data => {

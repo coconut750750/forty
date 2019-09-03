@@ -8,6 +8,7 @@ import Kitty from 'game_views/Kitty';
 import Trick from 'game_views/Trick';
 
 import Card from 'models/card';
+import Player from 'models/player';
 
 var _ = require('lodash');
 
@@ -36,7 +37,7 @@ class Table extends Component {
 
   componentDidMount() {
     this.props.socket.on('players', data => {
-      this.setState({ players: data.players });
+      this.setState({ players: data.players.map(p => new Player(p.name, p.isAdmin, p.active)) });
       this.meIndex = _.findIndex(data.players, { name: this.props.name });
     });
 
@@ -66,7 +67,9 @@ class Table extends Component {
     });
 
     this.props.socket.on('trick', data => {
-      this.setState({ points: data.points });
+      var players = this.state.players;
+      players[data.winner].win();
+      this.setState({ points: data.points, players });
     });
 
     this.props.socket.on('play', data => {
@@ -74,8 +77,13 @@ class Table extends Component {
       var cardsOnTable = {};
       _.forEach(trick, (card, name) => {
         cardsOnTable[name] = new Card(card.rank, card.suit);
-      })
+      });
       this.setState({ cardsOnTable });
+      if (Object.keys(cardsOnTable).length === 1) {
+        var players = this.state.players;
+        _.forEach(players, p => p.resetWin());
+        this.setState({ players });
+      }
     });
 
     this.props.socket.emit('getPlayers', {});
