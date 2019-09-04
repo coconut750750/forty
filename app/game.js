@@ -9,7 +9,7 @@ const { RANKS } = require('./const');
 const MAX_PLAYERS = 4;
 const STARTING_LEVEL = 2;
 const KITTY_CARDS = 6;
-const PHASES = ['teams', 'deal', 'kitty', 'tricks', 'endRound'];
+const PHASES = ['teams', 'deal', 'kitty', 'tricks', 'roundEnd'];
 
 class Game {
   constructor(code, onEnd) {
@@ -108,6 +108,14 @@ class Game {
     return index % 2 === this.defenseTeam;
   }
 
+  getDefenseTeam() {
+    return this.players.filter((_, index) => this.onDefense(index));
+  }
+
+  getOffenseTeam() {
+    return this.players.filter((_, index) => !this.onDefense(index));
+  }
+
   startRound() {
     this.deck = newDeck();
     this.points = 0;
@@ -117,13 +125,13 @@ class Game {
     this.trumpSetter = undefined;
     this.trumpRevealed = undefined;
 
-    this.phase = PHASES[1];
-
     this.players.forEach((player, index) => {
       player.team = index % 2 === this.defenseTeam;
     });
 
     this.actionIndex = this.startIndex;
+
+    this.phase = PHASES[1];
     this.notifyPhaseChange();
   }
 
@@ -272,6 +280,9 @@ class Game {
   }
 
   endRound() {
+    this.phase = PHASES[4];
+    this.notifyPhaseChange();
+
     if (this.winnerIndex % 2 !== this.defenseTeam) {
       var kittyTrick = new Trick();
       this.kitty.forEach(c => kittyTrick.addCard(c));
@@ -284,8 +295,7 @@ class Game {
     this.updateLevels();
     this.updateStartIndex();
 
-    this.phase = PHASES[4];
-    this.notifyPhaseChange();
+    this.notifyResults();
   }
 
   updateLevels() {
@@ -301,6 +311,7 @@ class Game {
         this.teamLevels[this.defenseTeam] += 1;
       }
     }
+    console.log(this.teamLevels);
   }
 
   updateStartIndex() {
@@ -353,6 +364,23 @@ class Game {
 
   notifyKittyReveal() {
     this.players.forEach(player => player.send('kitty', { cards: this.kitty }));
+  }
+
+  notifyResults() {
+    this.players.forEach(player => player.send('results', this.getResults()));
+  }
+
+  getResults() {
+    const defenders = this.getDefenseTeam();
+    const attackers = this.getOffenseTeam();
+
+    return {
+      points: this.points,
+      defenders: defenders.map(p => p.json()),
+      defenseLevel: RANKS.charAt(this.teamLevels[this.defenseTeam]),
+      attackers: attackers.map(p => p.json()),
+      attackLevel: RANKS.charAt(this.teamLevels[1 - this.defenseTeam]),
+    };
   }
 
   end() {

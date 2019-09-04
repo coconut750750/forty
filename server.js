@@ -161,6 +161,10 @@ app.io.on('connect', function (socket) {
     socket.emit('play', { trick: game.trick.json() });
   });
 
+  socket.on('getResults', data => {
+    socket.emit('results', game.getResults());
+  });
+
   socket.on('exitGame', data => {
     if (player.isAdmin) {
       game.end();

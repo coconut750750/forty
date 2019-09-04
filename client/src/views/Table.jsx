@@ -9,9 +9,10 @@ import Teams from 'game_views/Teams';
 import Deal from 'game_views/Deal';
 import Kitty from 'game_views/Kitty';
 import Trick from 'game_views/Trick';
-import RoundSummary from 'game_views/RoundSummary';
+import RoundEnd from 'game_views/RoundEnd';
 
 import Card from 'models/card';
+import Results from 'models/results';
 
 import { getMeIndex, newPlayer } from 'utils/player_utils';
 
@@ -34,6 +35,8 @@ class Table extends Component {
       cardsOnCircle: {},
       centerCards: [],
       points: 0,
+
+      results: undefined,
     };
   }
 
@@ -45,6 +48,8 @@ class Table extends Component {
       cardsOnCircle: {},
       centerCards: [],
       points: 0,
+
+      results: undefined,
     });
   }
 
@@ -73,6 +78,8 @@ class Table extends Component {
       if (data.phase === 'deal') {
         this.resetRoundData();
       } else if (data.phase === 'tricks') {
+        this.setState({ centerCards: [] });
+      } else if (data.phase === 'roundEnd') {
         this.setState({ centerCards: [] });
       }
     });
@@ -133,7 +140,14 @@ class Table extends Component {
     this.props.socket.on('kitty', data => {
       var kitty = data.cards.map(c => new Card(c.rank, c.suit));
       this.setState({ centerCards: kitty });
-    })
+    });
+
+    this.props.socket.on('results', data => {
+      const defenders = data.defenders.map(p => newPlayer(p));
+      const attackers = data.attackers.map(p => newPlayer(p));
+      const results = new Results(data.points, defenders, data.defenseLevel, attackers, data.attackLevel);
+      this.setState({ results });
+    });
 
     this.props.socket.emit('getPlayers', {});
     this.props.socket.emit('getPhase', {});
@@ -141,7 +155,7 @@ class Table extends Component {
     this.props.socket.emit('getTrump', {});
   }
 
-  renderGameCircle(showPoints) {
+  renderGameCircle(label) {
     const nPlayers = this.state.players.length;
     if (nPlayers === 0) {
       return undefined;
@@ -165,7 +179,7 @@ class Table extends Component {
         <Hand
           className="col-6"
           cards={this.state.centerCards}
-          label={showPoints && `Points: ${this.state.points}`}/>
+          label={label}/>
       </GameCircle>
     );
   }
@@ -186,19 +200,20 @@ class Table extends Component {
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle()}
+                  {this.renderGameCircle('Revealed Cards')}
                 </Kitty>,
       tricks:   <Trick
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle(true)}
+                  {this.renderGameCircle(`Points: ${this.state.points}`)}
                 </Trick>,
-      endRound: <RoundSummary
+      roundEnd: <RoundEnd
                   socket={this.props.socket}
-                  mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle()}
-                </RoundSummary>,
+                  mePlayer={this.state.mePlayer}
+                  results={this.state.results}>
+                  {this.renderGameCircle('Revealed Cards')}
+                </RoundEnd>,
     };
     return (
       <div>
