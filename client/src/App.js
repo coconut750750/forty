@@ -29,7 +29,7 @@ class App extends React.Component {
     });
 
     this.socket.on('end', data => {
-      this.leaveGame();
+      this.exitGame();
     });
     
     this.setState({
@@ -39,9 +39,9 @@ class App extends React.Component {
     });
   }
 
-  leaveGame() {
-    this.socket.disconnect();
-    this.setState({ viewState: "home" });
+  exitGame() {
+    this.socket.emit('exitGame', {});
+    this.setState({ viewState: "home", gameCode: "", name: "" });
   }
 
   render() {
@@ -56,14 +56,15 @@ class App extends React.Component {
                 goBack={ () => this.setState({ viewState: "home" }) }
                 join={ (gameCode, name) => this.setGame(gameCode, name) }/>,
       lobby:  <Lobby
-                leaveGame={ () => this.leaveGame() }
+                socket={this.socket}
                 gameCode={this.state.gameCode}
                 name={this.state.name}
-                socket={this.socket}/>,
+                exitGame={ () => this.exitGame() }/>,
       table:  <Table
+                socket={this.socket}
                 gameCode={this.state.gameCode}
                 name={this.state.name}
-                socket={this.socket}/>,
+                exitGame={ () => this.exitGame() }/>,
     }
 
     return (

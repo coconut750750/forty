@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 
 import GameCode from 'components/GameCode';
 import PlayerList from 'components/PlayerList';
+import ExitButton from 'components/ExitButton';
 
-import Player from 'models/player';
+import { getMePlayer, newPlayer } from 'utils/player_utils';
 
 import './Lobby.css';
 
@@ -12,14 +13,18 @@ class Lobby extends Component {
     super(props);
     this.state = {
       players: [],
+      mePlayer: undefined,
       message: undefined,
     };
   }
 
   componentDidMount() {
     this.props.socket.emit('join', { name: this.props.name, gameCode: this.props.gameCode });
+
     this.props.socket.on('players', data => {
-      this.setState({ players: data.players.map(p => new Player(p.name, p.isAdmin, p.active)) });
+      const players = data.players.map(p => newPlayer(p));
+      const mePlayer = getMePlayer(players, this.props.name);
+      this.setState({ players, mePlayer });
     });
 
     this.props.socket.on('startFail', data => {
@@ -40,7 +45,9 @@ class Lobby extends Component {
 
         <br/>
 
-        <button type="button" className="btn btn-light" onClick={ () => this.props.leaveGame() }>Leave Game</button>
+        <ExitButton
+          mePlayer={this.state.mePlayer}
+          exitGame={ () => this.props.exitGame() }/>
         <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('startGame') }>Start Game</button>
 
         <br/>

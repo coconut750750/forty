@@ -47,7 +47,21 @@ class Game {
 
   deactivatePlayer(playerName) {
     this.getPlayer(playerName).active = false;
-    this.notifyPlayerChange();
+    this.getPlayer(playerName).socket = undefined;
+    if (this.allDeactivated()) {
+      this.end();
+    } else {
+      this.notifyPlayerChange();
+    }
+  }
+
+  allDeactivated() {
+    for (var p of this.players) {
+      if (p.active) {
+        return false;
+      }
+    }
+    return true;
   }
 
   isActive(playerName) {
@@ -56,7 +70,7 @@ class Game {
 
   removePlayer(playerName) {
     var removedPlayer = _.remove(this.players, p => p.name == playerName);
-    if (removedPlayer[0].isAdmin) {
+    if (this.players.length === 0) {
       this.end();
     } else {
       this.notifyPlayerChange();

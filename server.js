@@ -67,11 +67,14 @@ app.io.on('connect', function (socket) {
     name = data.name;
     game = app.forty.retrieveGame(data.gameCode);
 
-    if (game.started) {
+    if (game.playerExists(name)) {
       game.activatePlayer(name, socket);
-      socket.emit('start', {});
     } else {
       game.addPlayer(name, socket);
+    }
+
+    if (game.started) {
+      socket.emit('start', {});
     }
     player = game.getPlayer(name);
   });
@@ -152,11 +155,17 @@ app.io.on('connect', function (socket) {
     socket.emit('play', { trick: game.trick.json() });
   });
 
-  socket.on('disconnect', data => {
-    if (game.started && !player.isAdmin) {
+  socket.on('exitGame', data => {
+    if (player.isAdmin) {
+      game.end();
+    } else if (game.started) {
       game.deactivatePlayer(name);
-    } else {
-      game.removePlayer(name);
+      return;
     }
+    game.removePlayer(name);
+  });
+
+  socket.on('disconnect', data => {
+    game.deactivatePlayer(name);
   });
 });

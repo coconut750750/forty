@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import GameCode from 'components/GameCode';
 import GameCircle from 'components/GameCircle';
+import ExitButton from 'components/ExitButton';
 
 import Teams from 'game_views/Teams';
 import Deal from 'game_views/Deal';
@@ -10,7 +11,8 @@ import Trick from 'game_views/Trick';
 import RoundSummary from 'game_views/RoundSummary';
 
 import Card from 'models/card';
-import Player from 'models/player';
+
+import { getMeIndex, newPlayer } from 'utils/player_utils';
 
 var _ = require('lodash');
 
@@ -19,7 +21,9 @@ class Table extends Component {
     super(props);
     this.state = {
       phase: undefined,
+
       players: [],
+      mePlayer: undefined,
       meIndex: -1,
       hand: [],
 
@@ -50,10 +54,13 @@ class Table extends Component {
 
   componentDidMount() {
     this.props.socket.on('players', data => {
-      const meIndex = _.findIndex(data.players, { name: this.props.name });
+      const players = data.players.map(p => newPlayer(p));
+      const meIndex = getMeIndex(players, this.props.name);
+      const mePlayer = players[meIndex];
 
       this.setState({
-        players: data.players.map(p => new Player(p.name, p.isAdmin, p.active, p.team)),
+        players,
+        mePlayer,
         meIndex,
       });
     });
@@ -123,7 +130,6 @@ class Table extends Component {
       return undefined;
     }
 
-    const mePlayer = this.state.players[this.state.meIndex];
     const rightPlayer = this.state.players[(this.state.meIndex + 1) % nPlayers];
     const acrossPlayer = this.state.players[(this.state.meIndex + 2) % nPlayers];
     const leftPlayer = this.state.players[(this.state.meIndex + 3) % nPlayers];
@@ -139,7 +145,7 @@ class Table extends Component {
         leftCard={this.state.cardsOnTable[leftPlayer.name]}
         rightPlayer={rightPlayer}
         rightCard={this.state.cardsOnTable[rightPlayer.name]}
-        meCard={this.state.cardsOnTable[mePlayer.name]}
+        meCard={this.state.cardsOnTable[this.state.mePlayer.name]}
         centerCards={this.state.centerCards}/>
     );
   }
@@ -152,24 +158,24 @@ class Table extends Component {
       deal:     <Deal
                   socket={this.props.socket}
                   hand={this.state.hand}
-                  mePlayer={this.state.players[this.state.meIndex]}>
+                  mePlayer={this.state.mePlayer}>
                   {this.renderGameCircle()}
                 </Deal>,
       kitty:    <Kitty
                   socket={this.props.socket}
                   hand={this.state.hand}
-                  mePlayer={this.state.players[this.state.meIndex]}>
+                  mePlayer={this.state.mePlayer}>
                   {this.renderGameCircle()}
                 </Kitty>,
       tricks:   <Trick
                   socket={this.props.socket}
                   hand={this.state.hand}
-                  mePlayer={this.state.players[this.state.meIndex]}>
+                  mePlayer={this.state.mePlayer}>
                   {this.renderGameCircle()}
                 </Trick>,
       endRound: <RoundSummary
                   socket={this.props.socket}
-                  mePlayer={this.state.players[this.state.meIndex]}>
+                  mePlayer={this.state.mePlayer}>
                   {this.renderGameCircle()}
                 </RoundSummary>,
     };
@@ -179,6 +185,10 @@ class Table extends Component {
         <p>Table</p>
 
         {game_views[this.state.phase]}
+
+        <ExitButton
+          mePlayer={this.state.mePlayer}
+          exitGame={ () => this.props.exitGame() }/>
 
         <br/>
       </div>
