@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import CardGroup from 'components/CardGroup';
 import Hand from 'components/Hand';
 
 var _ = require('lodash');
@@ -58,7 +59,7 @@ class Kitty extends Component {
           cards={this.getHandWithoutKitty()}
           click={ c => this.addToKitty(c) }/>,
         <br/>,
-        <Hand
+        <CardGroup
           isActive
           cards={this.state.kitty}
           click={ c => this.removeFromKitty(c) }/>,

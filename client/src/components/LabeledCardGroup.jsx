@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 
-import PlayerName from 'components/PlayerName';
 import CardGroup from 'components/CardGroup';
 
-class Hand extends Component {
+class LabeledCardGroup extends Component {
   render() {
     return (
       <div className={this.props.className}>
-        {this.props.player && [<PlayerName player={this.props.player}/>, <br/>]}
+        <div className={`badge m-2 badge-info`}>{ this.props.label }</div>
+
+        <br/>
         
         <CardGroup
           isActive={this.props.isActive}
@@ -19,4 +20,4 @@ class Hand extends Component {
   }
 }
 
-export default Hand;
+export default LabeledCardGroup;

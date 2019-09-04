@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 
+import CardGroup from 'components/CardGroup';
 import Hand from 'components/Hand';
+import LabeledCardGroup from 'components/LabeledCardGroup';
 
 class GameCircle extends Component {
   render() {
@@ -15,7 +17,7 @@ class GameCircle extends Component {
             cards={this.props.acrossCard ? [this.props.acrossCard] : undefined}/>
 
           {this.props.trumpCard ?
-          <Hand
+          <LabeledCardGroup
             className="col-4"
             label={"Trump Card"}
             cards={[this.props.trumpCard]}/>
@@ -38,7 +40,7 @@ class GameCircle extends Component {
         </div>
 
         <div className="d-flex justify-content-center">
-          <Hand
+          <CardGroup
             className="col-4"
             cards={this.props.meCard ? [this.props.meCard] : undefined}/>
         </div>

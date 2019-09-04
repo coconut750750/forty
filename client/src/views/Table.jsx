@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import ExitButton from 'components/ExitButton';
 import GameCode from 'components/GameCode';
 import GameCircle from 'components/GameCircle';
-import Hand from 'components/Hand';
+import LabeledCardGroup from 'components/LabeledCardGroup';
 
 import Teams from 'game_views/Teams';
 import Deal from 'game_views/Deal';
@@ -176,7 +176,7 @@ class Table extends Component {
         rightCard={this.state.cardsOnCircle[rightPlayer.name]}
         meCard={this.state.cardsOnCircle[this.state.mePlayer.name]}
         centerCards={this.state.centerCards}>
-        <Hand
+        <LabeledCardGroup
           className="col-6"
           cards={this.state.centerCards}
           label={label}/>
