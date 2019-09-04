@@ -14,9 +14,13 @@ class GameCircle extends Component {
             player={this.props.acrossPlayer}
             cards={this.props.acrossCard ? [this.props.acrossCard] : undefined}/>
 
+          {this.props.trumpCard ?
           <Hand
             className="col-4"
-            cards={this.props.trumpCard ? [this.props.trumpCard] : undefined}/>
+            label={"Trump Card"}
+            cards={[this.props.trumpCard]}/>
+            :
+            <div className="col-4"></div>}
         </div>
 
         <div className="d-flex justify-content-center">
@@ -25,9 +29,7 @@ class GameCircle extends Component {
             player={this.props.leftPlayer}
             cards={this.props.leftCard ? [this.props.leftCard] : undefined}/>
 
-         <Hand
-            className="col-6"
-            cards={this.props.centerCards}/>
+          {this.props.children}
 
           <Hand
             className="col-3"
@@ -35,8 +37,11 @@ class GameCircle extends Component {
             cards={this.props.rightCard ? [this.props.rightCard] : undefined}/>
         </div>
 
-        <Hand
+        <div className="d-flex justify-content-center">
+          <Hand
+            className="col-4"
             cards={this.props.meCard ? [this.props.meCard] : undefined}/>
+        </div>
       </div>
     );
   }

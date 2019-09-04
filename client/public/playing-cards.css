@@ -13,6 +13,9 @@ img.playing-card {
 .hand {
     padding: 0;
     margin: 0;
+    height: 96px;
+}
+.active-hand {
     height: 110px;
 }
 .active-hand img.playing-card { 

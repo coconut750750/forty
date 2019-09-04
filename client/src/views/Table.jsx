@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 
+import ExitButton from 'components/ExitButton';
 import GameCode from 'components/GameCode';
 import GameCircle from 'components/GameCircle';
-import ExitButton from 'components/ExitButton';
+import Hand from 'components/Hand';
 
 import Teams from 'game_views/Teams';
 import Deal from 'game_views/Deal';
@@ -33,8 +34,6 @@ class Table extends Component {
       centerCards: [],
       points: 0,
     };
-
-    this.getCenterCards = () => [];
   }
 
   resetRoundData() {
@@ -49,7 +48,7 @@ class Table extends Component {
   startNewTrick() {
     var players = this.state.players;
     _.forEach(players, p => p.resetWin());
-    this.setState({ players, centerCards: this.getCenterCards(), });
+    this.setState({ players });
   }
 
   componentDidMount() {
@@ -95,11 +94,11 @@ class Table extends Component {
     this.props.socket.on('trick', data => {
       var players = this.state.players;
       players[data.winner].win();
-      this.setState({ points: data.points, players });
 
-      var centerCards = _.cloneDeep(this.state.centerCards);
+      var centerCards = this.state.centerCards;
       data.cards.forEach(c => centerCards.push(new Card(c.rank, c.suit)));
-      this.getCenterCards = () => centerCards;
+
+      this.setState({ points: data.points, players, centerCards });
     });
 
     this.props.socket.on('play', data => {
@@ -124,7 +123,7 @@ class Table extends Component {
     this.props.socket.emit('getTrump', {});
   }
 
-  renderGameCircle() {
+  renderGameCircle(showPoints) {
     const nPlayers = this.state.players.length;
     if (nPlayers === 0) {
       return undefined;
@@ -133,8 +132,6 @@ class Table extends Component {
     const rightPlayer = this.state.players[(this.state.meIndex + 1) % nPlayers];
     const acrossPlayer = this.state.players[(this.state.meIndex + 2) % nPlayers];
     const leftPlayer = this.state.players[(this.state.meIndex + 3) % nPlayers];
-
-    console.log(this.state.players);
 
     return (
       <GameCircle
@@ -146,7 +143,12 @@ class Table extends Component {
         rightPlayer={rightPlayer}
         rightCard={this.state.cardsOnTable[rightPlayer.name]}
         meCard={this.state.cardsOnTable[this.state.mePlayer.name]}
-        centerCards={this.state.centerCards}/>
+        centerCards={this.state.centerCards}>
+        <Hand
+          className="col-6"
+          cards={this.state.centerCards}
+          label={showPoints && `Points: ${this.state.points}`}/>
+      </GameCircle>
     );
   }
 
@@ -171,7 +173,7 @@ class Table extends Component {
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle()}
+                  {this.renderGameCircle(true)}
                 </Trick>,
       endRound: <RoundSummary
                   socket={this.props.socket}
