@@ -63,6 +63,7 @@ class Kitty extends Component {
           isActive
           cards={this.state.kitty}
           click={ c => this.removeFromKitty(c) }/>,
+        <br/>,
         <button type="button" className="btn btn-light" 
           onClick={ () => this.confirm() }
           disabled={this.state.kitty.length !== KITTY_SIZE}>Confirm</button>,
