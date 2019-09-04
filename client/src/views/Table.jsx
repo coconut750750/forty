@@ -29,8 +29,9 @@ class Table extends Component {
       hand: [],
 
       trumpCard: undefined,
+      trumpMissing: false,
 
-      cardsOnTable: {},
+      cardsOnCircle: {},
       centerCards: [],
       points: 0,
     };
@@ -39,7 +40,9 @@ class Table extends Component {
   resetRoundData() {
     this.setState({
       trumpCard: undefined,
-      cardsOnTable: {},
+      trumpMissing: false,
+
+      cardsOnCircle: {},
       centerCards: [],
       points: 0,
     });
@@ -69,13 +72,28 @@ class Table extends Component {
       this.props.socket.emit('readyForAction', {});
       if (data.phase === 'deal') {
         this.resetRoundData();
+      } else if (data.phase === 'tricks') {
+        this.setState({ centerCards: [] });
       }
     });
 
     this.props.socket.on('trump', data => {
-      const trumpCard = new Card(data.card.rank, data.card.suit)
-      var cardsOnTable = { [data.name]: trumpCard };
-      this.setState({ cardsOnTable, trumpCard });
+      if (data.card === undefined) {
+        this.setState({ trumpMissing: true });
+      } else {
+        const trumpCard = new Card(data.card.rank, data.card.suit)
+        var cardsOnCircle = { [data.name]: trumpCard };
+        this.setState({ cardsOnCircle, trumpCard });
+
+        if (data.name === "") {
+          this.props.socket.emit('getKittyReveal', {});
+        }
+      }
+    });
+
+    this.props.socket.on('reveal', data => {
+      var centerCards = data.revealed.map(c => new Card(c.rank, c.suit));
+      this.setState({ centerCards });
     });
 
     this.props.socket.on('hand', data => {
@@ -103,11 +121,11 @@ class Table extends Component {
 
     this.props.socket.on('play', data => {
       var { trick } = data;
-      var cardsOnTable = {};
-      _.forEach(trick, (card, name) => { cardsOnTable[name] = new Card(card.rank, card.suit); });
-      this.setState({ cardsOnTable });
+      var cardsOnCircle = {};
+      _.forEach(trick, (card, name) => { cardsOnCircle[name] = new Card(card.rank, card.suit); });
+      this.setState({ cardsOnCircle });
 
-      if (Object.keys(cardsOnTable).length === 1) {
+      if (Object.keys(cardsOnCircle).length === 1) {
         this.startNewTrick();
       }
     });
@@ -137,12 +155,12 @@ class Table extends Component {
       <GameCircle
         trumpCard={this.state.trumpCard}
         acrossPlayer={acrossPlayer}
-        acrossCard={this.state.cardsOnTable[acrossPlayer.name]}
+        acrossCard={this.state.cardsOnCircle[acrossPlayer.name]}
         leftPlayer={leftPlayer}
-        leftCard={this.state.cardsOnTable[leftPlayer.name]}
+        leftCard={this.state.cardsOnCircle[leftPlayer.name]}
         rightPlayer={rightPlayer}
-        rightCard={this.state.cardsOnTable[rightPlayer.name]}
-        meCard={this.state.cardsOnTable[this.state.mePlayer.name]}
+        rightCard={this.state.cardsOnCircle[rightPlayer.name]}
+        meCard={this.state.cardsOnCircle[this.state.mePlayer.name]}
         centerCards={this.state.centerCards}>
         <Hand
           className="col-6"
@@ -160,7 +178,8 @@ class Table extends Component {
       deal:     <Deal
                   socket={this.props.socket}
                   hand={this.state.hand}
-                  mePlayer={this.state.mePlayer}>
+                  mePlayer={this.state.mePlayer}
+                  trumpMissing={this.state.trumpMissing}>
                   {this.renderGameCircle()}
                 </Deal>,
       kitty:    <Kitty

@@ -3,7 +3,7 @@ var _ = require('lodash');
 var Player = require('./player');
 var Card = require('./card');
 var Trick = require('./trick');
-var { newDeck, calibrate } = require('./deckutils');
+var { newDeck, calibrate, getTrumpFromKitty } = require('./deckutils');
 const { RANKS } = require('./const');
 
 const MAX_PLAYERS = 4;
@@ -115,6 +115,8 @@ class Game {
 
     this.trumpCard = undefined;
     this.trumpSetter = undefined;
+    this.trumpRevealed = undefined;
+
     this.phase = PHASES[1];
 
     this.players.forEach((player, index) => {
@@ -155,6 +157,8 @@ class Game {
       if (this.dealsLeft === 0) {
         if (this.trumpCard !== undefined) {
           this.startKitty();
+        } else {
+          this.notifyNeedTrump();
         }
       } else {
         this.nextActionPlayer();
@@ -167,7 +171,7 @@ class Game {
     return this.trumpCard === undefined;
   }
 
-  setTrumpSuit(trumpSuit) {
+  setTrumpSuit(trumpSuit, name) {
     this.trumpCard = new Card(RANKS.charAt(this.level), trumpSuit);
     this.trumpCard.calibrate(this.trumpCard);
     calibrate(this.deck, this.trumpCard);
@@ -175,6 +179,9 @@ class Game {
     this.players.forEach(player => calibrate(player.hand, this.trumpCard));
     this.players.forEach(player => player.sortHand());
     this.players.forEach(player => player.sendHand());
+
+    this.trumpSetter = name;
+    this.notifyTrumpSet();
 
     if (this.dealsLeft === 0) {
       this.startKitty();
@@ -187,6 +194,13 @@ class Game {
     }
     const rank = RANKS.charAt(this.level);
     return { rank };
+  }
+
+  forceSetTrump() {
+    const { suit, revealed } = getTrumpFromKitty(this.deck, RANKS.charAt(this.level));
+    this.trumpRevealed = revealed;
+    this.setTrumpSuit(suit, "");
+    this.notifyRevealed(revealed);
   }
 
   startKitty() {
@@ -313,8 +327,16 @@ class Game {
     }
   }
 
+  notifyNeedTrump() {
+    this.players.forEach(player => player.send('trump', {}));
+  }
+
   notifyTrumpSet() {
     this.players.forEach(player => player.send('trump', { card: this.trumpCard.json(), name: this.trumpSetter }));
+  }
+
+  notifyRevealed(revealed) {
+    this.players.forEach(player => player.send('reveal', { revealed }));
   }
 
   notifyTrickEnd() {

@@ -35,9 +35,14 @@ class Deal extends Component {
           cards={this.props.hand}
           click={ c => this.props.socket.emit('setTrump', { suit: c.suit }) }/>
 
-        <button type="button" className="btn btn-light" 
-          onClick={ () => this.draw() }
-          disabled={!this.state.dealActive}>Draw</button>
+        {this.props.trumpMissing && this.props.mePlayer.isAdmin ? 
+          <button type="button" className="btn btn-light" 
+            onClick={ () => this.props.socket.emit('setTrumpFromKitty', {}) }>Force Trump</button>
+          :
+          <button type="button" className="btn btn-light" 
+            onClick={ () => this.draw() }
+            disabled={!this.state.dealActive}>Draw</button>
+        }
         <br/>
 
       </div>

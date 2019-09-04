@@ -131,9 +131,15 @@ app.io.on('connect', function (socket) {
 
   socket.on('setTrump', data => {
     const { suit } = data;
-    game.setTrumpSuit(suit);
-    game.trumpSetter = name;
-    game.notifyTrumpSet();
+    game.setTrumpSuit(suit, name);
+  });
+
+  socket.on('setTrumpFromKitty', data => {
+    game.forceSetTrump();
+  });
+
+  socket.on('getKittyReveal', data => {
+    game.notifyRevealed(game.trumpRevealed)
   });
 
   socket.on('getTrump', data => {
