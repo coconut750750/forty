@@ -178,7 +178,12 @@ app.io.on('connect', function (socket) {
   });
 
   socket.on('disconnect', data => {
-    game.deactivatePlayer(name);
+    if (game !== undefined) {
+      game.deactivatePlayer(name);
+    } else {
+      console.log("game is undefined when disconnecting");
+      console.log(app.forty.games);
+    }
   });
 });
 
