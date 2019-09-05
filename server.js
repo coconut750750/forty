@@ -178,7 +178,7 @@ app.io.on('connect', function (socket) {
   });
 
   socket.on('disconnect', data => {
-    if (game !== undefined) {
+    if (game !== undefined && name !== undefined) {
       game.deactivatePlayer(name);
     }
   });
