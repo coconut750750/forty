@@ -170,6 +170,7 @@ app.io.on('connect', function (socket) {
   socket.on('exitGame', data => {
     if (player.isAdmin) {
       game.end();
+      return;
     } else if (game.started) {
       game.deactivatePlayer(name);
       return;
@@ -178,8 +179,10 @@ app.io.on('connect', function (socket) {
   });
 
   socket.on('disconnect', data => {
-    if (game !== undefined && name !== undefined) {
+    if (game !== undefined) {
       game.deactivatePlayer(name);
+    } else {
+      console.log("undefined game");
     }
   });
 });

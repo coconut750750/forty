@@ -22,7 +22,7 @@ class App extends React.Component {
   }
 
   setGame(gameCode, name) {
-    this.socket = io();
+    this.socket = io("localhost:5000");
     this.socket.on('start', data => {
       this.setState({ viewState: "table" });
     });
@@ -44,6 +44,7 @@ class App extends React.Component {
 
   exitGame() {
     this.socket.emit('exitGame', {});
+    this.socket.disconnect();
     this.setState({ viewState: "home", gameCode: "", name: "" });
   }
 
