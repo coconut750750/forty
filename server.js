@@ -24,6 +24,10 @@ app.post('/api/create', (req, res) => {
   });
 });
 
+app.get('dump', (req, res) => {
+  console.log(app.forty);
+});
+
 app.get('/api/checkname', (req, res) => {
   const { name } = req.query;
   if (name.length < 2 || name.length > 12) {
@@ -180,9 +184,9 @@ app.io.on('connect', function (socket) {
 
   socket.on('disconnect', data => {
     if (game !== undefined) {
+      console.log(game);
+      console.log(name);
       game.deactivatePlayer(name);
-    } else {
-      console.log("undefined game");
     }
   });
 });
