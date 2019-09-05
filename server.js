@@ -1,27 +1,16 @@
 const express = require('express');
 const path = require('path');
-
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 
 var app = express();
+
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
 const Forty = require('./app/forty');
 
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV === 'dev';
-
-if (process.env.NODE_ENV === 'production') {
-    // Serve any static files
-    app.use(express.static(path.join(__dirname, 'client/build')));
-    // Handle React routing, return all requests to React app
-    app.get('*', function(req, res) {
-        res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-    });
-}
-
-server.listen(port, () => console.log(`Listening on port ${port}`));
 
 app.use(bodyParser.json());
 app.io = io;
@@ -192,3 +181,14 @@ app.io.on('connect', function (socket) {
     game.deactivatePlayer(name);
   });
 });
+
+if (process.env.NODE_ENV === 'production') {
+    // Serve any static files
+    app.use(express.static(path.join(__dirname, 'client/build')));
+    // Handle React routing, return all requests to React app
+    app.get('*', function(req, res) {
+        res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+    });
+}
+
+server.listen(port, () => console.log(`Listening on port ${port}`));
