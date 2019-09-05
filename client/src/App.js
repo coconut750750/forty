@@ -15,7 +15,6 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: "Click to generate code!",
       viewState: "home",
       gameCode: "",
       name: "",
@@ -30,6 +29,10 @@ class App extends React.Component {
 
     this.socket.on('end', data => {
       this.exitGame();
+    });
+
+    this.socket.on('disconnect', data => {
+      this.setState({ viewState: "home", gameCode: "", name: "" });
     });
     
     this.setState({
