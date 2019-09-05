@@ -311,7 +311,6 @@ class Game {
         this.teamLevels[this.defenseTeam] += 1;
       }
     }
-    console.log(this.teamLevels);
   }
 
   updateStartIndex() {
