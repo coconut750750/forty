@@ -23,7 +23,7 @@ class App extends React.Component {
   }
 
   setGame(gameCode, name) {
-    this.socket = io('192.168.1.132:5000');
+    this.socket = io('localhost:5000');
     this.socket.on('start', data => {
       this.setState({ viewState: "table" });
     });
