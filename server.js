@@ -174,18 +174,15 @@ app.io.on('connect', function (socket) {
   socket.on('exitGame', data => {
     if (player.isAdmin) {
       game.end();
-      return;
     } else if (game.started) {
       game.deactivatePlayer(name);
-      return;
+    } else {
+      game.removePlayer(name);
     }
-    game.removePlayer(name);
   });
 
   socket.on('disconnect', data => {
-    if (game !== undefined) {
-      console.log(game);
-      console.log(name);
+    if (game !== undefined && game.playerExists(name)) {
       game.deactivatePlayer(name);
     }
   });
