@@ -3,9 +3,29 @@ import React, { Component } from 'react';
 import PlayerName from 'components/PlayerName';
 import RoundResults from 'components/RoundResults';
 
+import Results from 'models/results';
+
+import { newPlayer } from 'utils/player_utils';
+
 class RoundEnd extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      results: undefined,
+    };
+  }
+
   componentDidMount() {
+    this.props.socket.on('results', data => {
+      const defenders = data.defenders.map(p => newPlayer(p));
+      const attackers = data.attackers.map(p => newPlayer(p));
+      const results = new Results(data.points, defenders, data.defenseLevel, attackers, data.attackLevel, data.gameOver);
+      this.setState({ results });
+    });
+
     this.props.socket.emit('getResults', {});
+    this.props.socket.emit('getKitty', {});
+    this.props.socket.emit('getPlay', {});
   }
 
   render() {
@@ -19,9 +39,9 @@ class RoundEnd extends Component {
         <br/>
 
         <RoundResults
-          results={this.props.results}/>
+          results={this.state.results}/>
 
-        {this.props.results !== undefined && this.props.results.gameOver ? 
+        {this.state.results !== undefined && this.state.results.gameOver ? 
         <button type="button" className="btn btn-light" 
           onClick={ () => this.props.socket.emit('startGame', {}) }>Start New Game</button>
           :

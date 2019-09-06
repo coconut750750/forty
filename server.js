@@ -160,6 +160,12 @@ app.io.on('connect', function (socket) {
     game.startTrick();
   });
 
+  socket.on('getKitty', data => {
+    if (game.phase === 'roundEnd') {
+      socket.emit('kitty', { cards: game.kitty });
+    }
+  });
+
   socket.on('playCard', data => {
     game.playCard(data.card);
   });

@@ -289,13 +289,13 @@ class Game {
       this.kitty.forEach(c => kittyTrick.addCard(c));
       this.points += 2 * kittyTrick.calculatePoints();
 
-      this.notifyKittyReveal();
     }
 
     this.winnerIndex = undefined;
     this.updateWithResults();
     this.updateStartIndex();
 
+    this.notifyKittyReveal();
     this.notifyResults();
   }
 

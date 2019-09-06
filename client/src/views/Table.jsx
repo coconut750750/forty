@@ -12,7 +12,6 @@ import Trick from 'game_views/Trick';
 import RoundEnd from 'game_views/RoundEnd';
 
 import Card from 'models/card';
-import Results from 'models/results';
 
 import { getMeIndex, newPlayer } from 'utils/player_utils';
 
@@ -39,8 +38,6 @@ class Table extends Component {
       pointCards: [],
       kittyAfter: [],
       points: 0,
-
-      results: undefined,
     };
   }
 
@@ -56,8 +53,6 @@ class Table extends Component {
       pointCards: [],
       kittyAfter: [],
       points: 0,
-
-      results: undefined,
     });
   }
 
@@ -148,15 +143,8 @@ class Table extends Component {
       this.setState({ kittyAfter });
     });
 
-    this.props.socket.on('results', data => {
-      const defenders = data.defenders.map(p => newPlayer(p));
-      const attackers = data.attackers.map(p => newPlayer(p));
-      const results = new Results(data.points, defenders, data.defenseLevel, attackers, data.attackLevel, data.gameOver);
-      this.setState({ results });
-    });
-
-    this.props.socket.emit('getPhase', {});
     this.props.socket.emit('getPlayers', {});
+    this.props.socket.emit('getPhase', {});
     this.props.socket.emit('getHand', {});
     this.props.socket.emit('getTrump', {});
   }
@@ -215,8 +203,7 @@ class Table extends Component {
                 </Trick>,
       roundEnd: <RoundEnd
                   socket={this.props.socket}
-                  mePlayer={this.state.mePlayer}
-                  results={this.state.results}>
+                  mePlayer={this.state.mePlayer}>
                   {this.renderGameCircle(this.state.trickCardsOnCircle, this.state.kittyAfter, 'Revealed Cards')}
                 </RoundEnd>,
     };
