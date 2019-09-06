@@ -6,6 +6,10 @@ import LabeledCardGroup from 'components/LabeledCardGroup';
 
 class GameCircle extends Component {
   render() {
+    const acrossCard = this.props.cards[this.props.acrossPlayer.name];
+    const leftCard = this.props.cards[this.props.leftPlayer.name];
+    const rightCard = this.props.cards[this.props.rightPlayer.name];
+
     return (
       <div>
         <div className="d-flex justify-content-center">
@@ -14,7 +18,7 @@ class GameCircle extends Component {
           <Hand
             className="col-4"
             player={this.props.acrossPlayer}
-            cards={this.props.acrossCard ? [this.props.acrossCard] : undefined}/>
+            cards={acrossCard && [acrossCard]}/>
 
           {this.props.trumpCard ?
           <LabeledCardGroup
@@ -29,20 +33,20 @@ class GameCircle extends Component {
           <Hand
             className="col-3"
             player={this.props.leftPlayer}
-            cards={this.props.leftCard ? [this.props.leftCard] : undefined}/>
+            cards={leftCard && [leftCard]}/>
 
           {this.props.children}
 
           <Hand
             className="col-3"
             player={this.props.rightPlayer}
-            cards={this.props.rightCard ? [this.props.rightCard] : undefined}/>
+            cards={rightCard && [rightCard]}/>
         </div>
 
         <div className="d-flex justify-content-center">
           <CardGroup
             className="col-4"
-            cards={this.props.meCard ? [this.props.meCard] : undefined}/>
+            cards={this.props.meCard && [this.props.meCard]}/>
         </div>
       </div>
     );

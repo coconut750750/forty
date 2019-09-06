@@ -56,7 +56,13 @@ class Table extends Component {
     });
   }
 
-  startNewTrick() {
+  resetPlayerTeams() {
+    var players = this.state.players;
+    _.forEach(players, p => { p.team = undefined; });
+    this.setState({ players });
+  }
+
+  resetPlayerWins() {
     var players = this.state.players;
     _.forEach(players, p => p.resetWin());
     this.setState({ players });
@@ -65,8 +71,10 @@ class Table extends Component {
   componentDidMount() {
     this.props.socket.on('phase', data => {
       this.setState({ phase: data.phase });
-
-      if (data.phase === 'deal') {
+      if (data.phase === 'teams') {
+        this.resetPlayerTeams();
+        this.resetPlayerWins();
+      } else if (data.phase === 'deal') {
         this.resetRoundData();
       }
 
@@ -134,7 +142,7 @@ class Table extends Component {
       this.setState({ trickCardsOnCircle });
 
       if (Object.keys(trickCardsOnCircle).length === 1) {
-        this.startNewTrick();
+        this.resetPlayerWins();
       }
     });
 
@@ -163,11 +171,9 @@ class Table extends Component {
       <GameCircle
         trumpCard={this.state.trumpCard}
         acrossPlayer={acrossPlayer}
-        acrossCard={circleCards[acrossPlayer.name]}
         leftPlayer={leftPlayer}
-        leftCard={circleCards[leftPlayer.name]}
         rightPlayer={rightPlayer}
-        rightCard={circleCards[rightPlayer.name]}
+        cards={circleCards}
         meCard={circleCards[this.state.mePlayer.name]}>
         <LabeledCardGroup
           className="col-6"
