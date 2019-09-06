@@ -157,7 +157,6 @@ class Table extends Component {
 
     this.props.socket.emit('getPhase', {});
     this.props.socket.emit('getPlayers', {});
-    // move these to specific game view components
     this.props.socket.emit('getHand', {});
     this.props.socket.emit('getTrump', {});
   }
@@ -206,19 +205,19 @@ class Table extends Component {
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle(this.state.trumpCardOnCircle, 'Revealed Cards', this.state.kittyBefore)}
+                  {this.renderGameCircle(this.state.trumpCardOnCircle, this.state.kittyBefore, 'Revealed Cards')}
                 </Kitty>,
       tricks:   <Trick
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle(this.state.trickCardsOnCircle, `Points: ${this.state.points}`, this.state.pointCards)}
+                  {this.renderGameCircle(this.state.trickCardsOnCircle, this.state.pointCards, `Points: ${this.state.points}`)}
                 </Trick>,
       roundEnd: <RoundEnd
                   socket={this.props.socket}
                   mePlayer={this.state.mePlayer}
                   results={this.state.results}>
-                  {this.renderGameCircle(this.state.trickCardsOnCircle, 'Revealed Cards', this.state.kittyAfter)}
+                  {this.renderGameCircle(this.state.trickCardsOnCircle, this.state.kittyAfter, 'Revealed Cards')}
                 </RoundEnd>,
     };
     return (
