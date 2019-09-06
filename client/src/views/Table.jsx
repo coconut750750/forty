@@ -32,8 +32,12 @@ class Table extends Component {
       trumpCard: undefined,
       trumpMissing: false,
 
-      cardsOnCircle: {},
-      centerCards: [],
+      trumpCardOnCircle: {},
+      trickCardsOnCircle: {},
+
+      kittyBefore: [],
+      pointCards: [],
+      kittyAfter: [],
       points: 0,
 
       results: undefined,
@@ -45,8 +49,12 @@ class Table extends Component {
       trumpCard: undefined,
       trumpMissing: false,
 
-      cardsOnCircle: {},
-      centerCards: [],
+      trumpCardOnCircle: {},
+      trickCardsOnCircle: {},
+
+      kittyBefore: [],
+      pointCards: [],
+      kittyAfter: [],
       points: 0,
 
       results: undefined,
@@ -60,6 +68,16 @@ class Table extends Component {
   }
 
   componentDidMount() {
+    this.props.socket.on('phase', data => {
+      this.setState({ phase: data.phase });
+
+      if (data.phase === 'deal') {
+        this.resetRoundData();
+      }
+
+      this.props.socket.emit('readyForAction', {});
+    });
+
     this.props.socket.on('players', data => {
       const players = data.players.map(p => newPlayer(p));
       const meIndex = getMeIndex(players, this.props.name);
@@ -72,25 +90,13 @@ class Table extends Component {
       });
     });
 
-    this.props.socket.on('phase', data => {
-      this.setState({ phase: data.phase });
-      this.props.socket.emit('readyForAction', {});
-      if (data.phase === 'deal') {
-        this.resetRoundData();
-      } else if (data.phase === 'tricks') {
-        this.setState({ centerCards: [] });
-      } else if (data.phase === 'roundEnd') {
-        this.setState({ centerCards: [] });
-      }
-    });
-
     this.props.socket.on('trump', data => {
       if (data.card === undefined) {
         this.setState({ trumpMissing: true });
       } else {
         const trumpCard = new Card(data.card.rank, data.card.suit)
-        var cardsOnCircle = { [data.name]: trumpCard };
-        this.setState({ cardsOnCircle, trumpCard });
+        var trumpCardOnCircle = { [data.name]: trumpCard };
+        this.setState({ trumpCardOnCircle, trumpCard });
 
         if (data.name === "") {
           this.props.socket.emit('getKittyReveal', {});
@@ -99,8 +105,8 @@ class Table extends Component {
     });
 
     this.props.socket.on('reveal', data => {
-      var centerCards = data.revealed.map(c => new Card(c.rank, c.suit));
-      this.setState({ centerCards });
+      var kittyBefore = data.revealed.map(c => new Card(c.rank, c.suit));
+      this.setState({ kittyBefore });
     });
 
     this.props.socket.on('hand', data => {
@@ -120,42 +126,43 @@ class Table extends Component {
       var players = this.state.players;
       players[data.winner].win();
 
-      var centerCards = this.state.centerCards;
-      data.cards.forEach(c => centerCards.push(new Card(c.rank, c.suit)));
+      var pointCards = this.state.pointCards;
+      data.cards.forEach(c => pointCards.push(new Card(c.rank, c.suit)));
 
-      this.setState({ points: data.points, players, centerCards });
+      this.setState({ points: data.points, players, pointCards });
     });
 
     this.props.socket.on('play', data => {
       var { trick } = data;
-      var cardsOnCircle = {};
-      _.forEach(trick, (card, name) => { cardsOnCircle[name] = new Card(card.rank, card.suit); });
-      this.setState({ cardsOnCircle });
+      var trickCardsOnCircle = {};
+      _.forEach(trick, (card, name) => { trickCardsOnCircle[name] = new Card(card.rank, card.suit); });
+      this.setState({ trickCardsOnCircle });
 
-      if (Object.keys(cardsOnCircle).length === 1) {
+      if (Object.keys(trickCardsOnCircle).length === 1) {
         this.startNewTrick();
       }
     });
 
     this.props.socket.on('kitty', data => {
-      var kitty = data.cards.map(c => new Card(c.rank, c.suit));
-      this.setState({ centerCards: kitty });
+      var kittyAfter = data.cards.map(c => new Card(c.rank, c.suit));
+      this.setState({ kittyAfter });
     });
 
     this.props.socket.on('results', data => {
       const defenders = data.defenders.map(p => newPlayer(p));
       const attackers = data.attackers.map(p => newPlayer(p));
-      const results = new Results(data.points, defenders, data.defenseLevel, attackers, data.attackLevel);
+      const results = new Results(data.points, defenders, data.defenseLevel, attackers, data.attackLevel, data.gameOver);
       this.setState({ results });
     });
 
-    this.props.socket.emit('getPlayers', {});
     this.props.socket.emit('getPhase', {});
+    this.props.socket.emit('getPlayers', {});
+    // move these to specific game view components
     this.props.socket.emit('getHand', {});
     this.props.socket.emit('getTrump', {});
   }
 
-  renderGameCircle(label) {
+  renderGameCircle(circleCards, centerCards, centerLabel) {
     const nPlayers = this.state.players.length;
     if (nPlayers === 0) {
       return undefined;
@@ -169,17 +176,16 @@ class Table extends Component {
       <GameCircle
         trumpCard={this.state.trumpCard}
         acrossPlayer={acrossPlayer}
-        acrossCard={this.state.cardsOnCircle[acrossPlayer.name]}
+        acrossCard={circleCards[acrossPlayer.name]}
         leftPlayer={leftPlayer}
-        leftCard={this.state.cardsOnCircle[leftPlayer.name]}
+        leftCard={circleCards[leftPlayer.name]}
         rightPlayer={rightPlayer}
-        rightCard={this.state.cardsOnCircle[rightPlayer.name]}
-        meCard={this.state.cardsOnCircle[this.state.mePlayer.name]}
-        centerCards={this.state.centerCards}>
+        rightCard={circleCards[rightPlayer.name]}
+        meCard={circleCards[this.state.mePlayer.name]}>
         <LabeledCardGroup
           className="col-6"
-          cards={this.state.centerCards}
-          label={label}/>
+          cards={centerCards}
+          label={centerLabel}/>
       </GameCircle>
     );
   }
@@ -194,25 +200,25 @@ class Table extends Component {
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}
                   trumpMissing={this.state.trumpMissing}>
-                  {this.renderGameCircle()}
+                  {this.renderGameCircle(this.state.trumpCardOnCircle)}
                 </Deal>,
       kitty:    <Kitty
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle('Revealed Cards')}
+                  {this.renderGameCircle(this.state.trumpCardOnCircle, 'Revealed Cards', this.state.kittyBefore)}
                 </Kitty>,
       tricks:   <Trick
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}>
-                  {this.renderGameCircle(`Points: ${this.state.points}`)}
+                  {this.renderGameCircle(this.state.trickCardsOnCircle, `Points: ${this.state.points}`, this.state.pointCards)}
                 </Trick>,
       roundEnd: <RoundEnd
                   socket={this.props.socket}
                   mePlayer={this.state.mePlayer}
                   results={this.state.results}>
-                  {this.renderGameCircle('Revealed Cards')}
+                  {this.renderGameCircle(this.state.trickCardsOnCircle, 'Revealed Cards', this.state.kittyAfter)}
                 </RoundEnd>,
     };
     return (

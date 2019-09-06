@@ -1,5 +1,5 @@
 module.exports = {
-    RANKS: '234567890jqka',
+    RANKS: '23',
     SUITS: 'hcds',
     SJOKER: 'y',
     FJOKER: 'z',

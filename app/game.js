@@ -97,6 +97,7 @@ class Game {
     this.teamNextStarts[1 - this.defenseTeam] = (this.startIndex + 1) % MAX_PLAYERS;
 
     this.notifyGameStart();
+    this.notifyPhaseChange();
   }
 
   permute() {
@@ -292,24 +293,25 @@ class Game {
     }
 
     this.winnerIndex = undefined;
-    this.updateLevels();
+    this.updateWithResults();
     this.updateStartIndex();
 
     this.notifyResults();
   }
 
-  updateLevels() {
-    if (this.points === 0) {
-      this.teamLevels[this.defenseTeam] += 2;
-    } else if (this.points <= 35) {
-      this.teamLevels[this.defenseTeam] += 1;
-    } else {
+  updateWithResults() {
+    if (this.points >= 40) {
       this.defenseTeam = 1 - this.defenseTeam;
-      if (this.points >= 100) {
-        this.teamLevels[this.defenseTeam] += 2;
-      } else if (this.points >= 80) {
-        this.teamLevels[this.defenseTeam] += 1;
-      }
+    }
+    var defenseLevel = this.teamLevels[this.defenseTeam];
+    if (defenseLevel === RANKS.length) {
+      this.endGame();
+    }
+
+    if (this.points === 0 || this.points >= 100) {
+      this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 2, RANKS.length);
+    } else if (this.points <= 35 || this.points >= 80) {
+      this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 1, RANKS.length);
     }
   }
 
@@ -317,6 +319,10 @@ class Game {
     const index = this.teamNextStarts[this.defenseTeam];
     this.startIndex = index;
     this.teamNextStarts[this.defenseTeam] = (index + 2) % MAX_PLAYERS;
+  }
+
+  endGame() {
+    this.started = false;
   }
 
   notifyPlayerChange() {
@@ -369,6 +375,10 @@ class Game {
     this.players.forEach(player => player.send('results', this.getResults()));
   }
 
+  notifyGameEnd() {
+
+  }
+
   getResults() {
     const defenders = this.getDefenseTeam();
     const attackers = this.getOffenseTeam();
@@ -379,6 +389,7 @@ class Game {
       defenseLevel: RANKS.charAt(this.teamLevels[this.defenseTeam]),
       attackers: attackers.map(p => p.json()),
       attackLevel: RANKS.charAt(this.teamLevels[1 - this.defenseTeam]),
+      gameOver: !this.started,
     };
   }
 

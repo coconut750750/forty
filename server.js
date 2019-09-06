@@ -24,8 +24,9 @@ app.post('/api/create', (req, res) => {
   });
 });
 
-app.get('dump', (req, res) => {
+app.get('/dump', (req, res) => {
   console.log(app.forty);
+  res.send();
 });
 
 app.get('/api/checkname', (req, res) => {

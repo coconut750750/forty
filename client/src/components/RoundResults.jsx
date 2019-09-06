@@ -15,7 +15,11 @@ class RoundResults extends Component {
 
     return (
       <div>
+        {this.props.results.gameOver ?
+        <p style={{ margin: 0 }}>Game Over</p>
+          :
         <p style={{ margin: 0 }}>Results</p>
+        }
 
         <div className={`badge m-2 badge-info`}>{`Points: ${this.props.results.points}`}</div>
 

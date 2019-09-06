@@ -21,8 +21,13 @@ class RoundEnd extends Component {
         <RoundResults
           results={this.props.results}/>
 
+        {this.props.results !== undefined && this.props.results.gameOver ? 
+        <button type="button" className="btn btn-light" 
+          onClick={ () => this.props.socket.emit('startGame', {}) }>Start New Game</button>
+          :
         <button type="button" className="btn btn-light" 
           onClick={ () => this.props.socket.emit('startRound', {}) }>Start Next Round</button>
+        }
         <br/>
       </div>
     );
