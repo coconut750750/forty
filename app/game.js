@@ -291,7 +291,6 @@ class Game {
       var kittyTrick = new Trick();
       this.kitty.forEach(c => kittyTrick.addCard(c));
       this.points += 2 * kittyTrick.calculatePoints();
-
     }
 
     this.winnerIndex = undefined;
@@ -307,11 +306,10 @@ class Game {
       this.defenseTeam = 1 - this.defenseTeam;
     }
     var defenseLevel = this.teamLevels[this.defenseTeam];
+
     if (defenseLevel === RANKS.length - 1) {
       this.endGame();
-    }
-
-    if (this.points === 0 || this.points >= 100) {
+    } else if (this.points === 0 || this.points >= 100) {
       this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 2, RANKS.length - 1);
     } else if (this.points <= 35 || this.points >= 80) {
       this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 1, RANKS.length - 1);
@@ -359,9 +357,10 @@ class Game {
   }
 
   notifyTrickEnd() {
+    const cards = !this.onDefense(this.winnerIndex) ? this.trick.getPointCards() : [];
     this.players.forEach(player => player.send('trick', {
       points: this.points,
-      cards: !this.onDefense(this.winnerIndex) ? this.trick.getPointCards() : [],
+      cards,
       winner: this.winnerIndex,
     }));
   }
@@ -375,11 +374,8 @@ class Game {
   }
 
   notifyResults() {
-    this.players.forEach(player => player.send('results', this.getResults()));
-  }
-
-  notifyGameEnd() {
-
+    const results = this.getResults();
+    this.players.forEach(player => player.send('results', results));
   }
 
   getResults() {

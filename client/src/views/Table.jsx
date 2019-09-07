@@ -28,9 +28,7 @@ class Table extends Component {
       meIndex: -1,
       hand: [],
 
-      trumpCard: undefined,
-      trumpMissing: false,
-
+      trumpNeeded: false,
       trumpCardOnCircle: {},
       trickCardsOnCircle: {},
 
@@ -43,9 +41,7 @@ class Table extends Component {
 
   resetRoundData() {
     this.setState({
-      trumpCard: undefined,
-      trumpMissing: false,
-
+      trumpNeeded: false,
       trumpCardOnCircle: {},
       trickCardsOnCircle: {},
 
@@ -95,11 +91,11 @@ class Table extends Component {
 
     this.props.socket.on('trump', data => {
       if (data.card === undefined) {
-        this.setState({ trumpMissing: true });
+        this.setState({ trumpNeeded: true });
       } else {
         const trumpCard = new Card(data.card.rank, data.card.suit)
         var trumpCardOnCircle = { [data.name]: trumpCard };
-        this.setState({ trumpCardOnCircle, trumpCard });
+        this.setState({ trumpCardOnCircle });
 
         if (data.name === "") {
           this.props.socket.emit('getKittyReveal', {});
@@ -169,7 +165,7 @@ class Table extends Component {
 
     return (
       <GameCircle
-        trumpCard={this.state.trumpCard}
+        trumpCard={Object.values(this.state.trumpCardOnCircle)[0]}
         acrossPlayer={acrossPlayer}
         leftPlayer={leftPlayer}
         rightPlayer={rightPlayer}
@@ -192,7 +188,7 @@ class Table extends Component {
                   socket={this.props.socket}
                   hand={this.state.hand}
                   mePlayer={this.state.mePlayer}
-                  trumpMissing={this.state.trumpMissing}>
+                  trumpNeeded={this.state.trumpNeeded}>
                   {this.renderGameCircle(this.state.trumpCardOnCircle)}
                 </Deal>,
       kitty:    <Kitty
@@ -216,7 +212,6 @@ class Table extends Component {
     return (
       <div>
         <GameCode gameCode={this.props.gameCode}/>
-        <p>Table</p>
 
         {game_views[this.state.phase]}
 
