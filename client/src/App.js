@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import { createGame } from 'api/register';
 
 import Home from 'views/Home';
+import HowTo from 'views/HowTo';
 import Create from 'views/Create';
 import Join from 'views/Join';
 import Lobby from 'views/Lobby';
@@ -52,7 +53,10 @@ class App extends React.Component {
     const views = {
       home:   <Home 
                 createGame={ () => this.setState({ viewState: "create" }) } 
-                joinGame={ () => this.setState({ viewState: "join" }) }/>,
+                joinGame={ () => this.setState({ viewState: "join" }) }
+                viewHowTo={ () => this.setState({ viewState: "howto" }) }/>,
+      howto:  <HowTo
+                goBack={ () => this.setState({ viewState: "home" }) }/>,
       create: <Create
                 goBack={ () => this.setState({ viewState: "home" }) }
                 create={ name => createGame().then(res => this.setGame(res.gameCode, name)) }/>,
@@ -75,7 +79,9 @@ class App extends React.Component {
       <div className="App d-flex justify-content-center">
         <div className="container" style={{ maxWidth: "500px" }}>
           <div>
-            Forty
+            <br/>
+            <h3>Forty</h3>
+            <p>A 4-player trick-taking card game</p>
           </div>
 
           <hr/>
@@ -83,6 +89,12 @@ class App extends React.Component {
           {views[this.state.viewState]}
 
           <hr/>
+
+          <div>
+            <small>built by <a href="http://brandon-wang.me">brandon wang</a></small>
+            <br/>
+            <small>view on github</small>
+          </div>
 
         </div>
       </div>

@@ -5,3 +5,13 @@
 button {
     margin: 8px;
 }
+
+.btn-group,
+.btn-group-vertical {
+    margin: 9px;
+}
+
+.btn-group button,
+.btn-group-vertical button {
+    margin: 0px;
+}

@@ -6,8 +6,6 @@ import ExitButton from 'components/ExitButton';
 
 import { getMePlayer, newPlayer } from 'utils/player_utils';
 
-import './Lobby.css';
-
 class Lobby extends Component {
   constructor(props) {
     super(props);
