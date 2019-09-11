@@ -80,7 +80,30 @@ class App extends React.Component {
         <div className="container" style={{ maxWidth: "500px" }}>
           <div>
             <br/>
-            <h3>Forty</h3>
+            <div className="row justify-content-center align-items-center">
+              <div className="col-2">
+                <h3>Forty</h3>
+              </div>
+
+              <div className="col-2">
+                <div className="hand fan">
+                  <img
+                    className="playing-card"
+                    alt="logo"
+                    src="cards/4h.svg"
+                    style={{ height: "50px" }}/>
+                  <img
+                    className="playing-card"
+                    alt="logo"
+                    src="cards/0s.svg"
+                    style={{ height: "50px" }}/>
+                  
+                </div>
+              </div>
+                
+            </div>
+            
+
             <p>A 4-player trick-taking card game</p>
           </div>
 
