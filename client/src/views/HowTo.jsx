@@ -10,7 +10,7 @@ class HowTo extends Component {
       <div>
         <p>HowTo</p>
 
-      <button type="button" className="btn btn-light" onClick={this.props.goBack}>Back</button>
+        <button type="button" className="btn btn-light" onClick={this.props.goBack}>Back</button>
 
       </div>
     );

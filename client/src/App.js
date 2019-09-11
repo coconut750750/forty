@@ -93,7 +93,7 @@ class App extends React.Component {
           <div>
             <small>built by <a href="http://brandon-wang.me">brandon wang</a></small>
             <br/>
-            <small>view on github</small>
+            {/* <small>view on github</small> */}
           </div>
 
         </div>
