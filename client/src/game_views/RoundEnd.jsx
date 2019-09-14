@@ -18,8 +18,8 @@ class RoundEnd extends Component {
   componentDidMount() {
     this.props.socket.on('results', data => {
       const defenders = data.defenders.map(p => newPlayer(p));
-      const attackers = data.attackers.map(p => newPlayer(p));
-      const results = new Results(data.points, defenders, data.defenseLevel, attackers, data.attackLevel, data.gameOver);
+      const challengers = data.challengers.map(p => newPlayer(p));
+      const results = new Results(data.points, defenders, data.defenseLevel, challengers, data.challengeLevel, data.gameOver);
       this.setState({ results });
     });
 

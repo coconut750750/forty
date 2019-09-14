@@ -30,8 +30,8 @@ class RoundResults extends Component {
           </div>
 
           <div className="col-6">
-            <PlayerList players={this.props.results.attackers}/>
-            <div className="badge m-2 badge-info">{`Level: ${this.props.results.attackLevel}`}</div>
+            <PlayerList players={this.props.results.challengers}/>
+            <div className="badge m-2 badge-info">{`Level: ${this.props.results.challengeLevel}`}</div>
           </div>
         </div>
 

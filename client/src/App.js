@@ -81,11 +81,11 @@ class App extends React.Component {
           <div>
             <br/>
             <div className="row justify-content-center align-items-center">
-              <div className="col-2">
+              <div className="col-3">
                 <h3>Forty</h3>
               </div>
 
-              <div className="col-2">
+              <div className="col-3">
                 <div className="hand fan">
                   <img
                     className="playing-card"

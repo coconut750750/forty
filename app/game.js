@@ -380,14 +380,14 @@ class Game {
 
   getResults() {
     const defenders = this.getDefenseTeam();
-    const attackers = this.getOffenseTeam();
+    const challengers = this.getOffenseTeam();
 
     return {
       points: this.points,
       defenders: defenders.map(p => p.json()),
       defenseLevel: RANKS.charAt(this.teamLevels[this.defenseTeam]),
-      attackers: attackers.map(p => p.json()),
-      attackLevel: RANKS.charAt(this.teamLevels[1 - this.defenseTeam]),
+      challengers: challengers.map(p => p.json()),
+      challengeLevel: RANKS.charAt(this.teamLevels[1 - this.defenseTeam]),
       gameOver: !this.started,
     };
   }
