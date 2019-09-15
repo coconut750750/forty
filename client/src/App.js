@@ -89,10 +89,8 @@ class App extends React.Component {
               <div className="col-3">
                 <Icon/>
               </div>
-                
             </div>
             
-
             <p>A 4-player trick-taking card game</p>
           </div>
 
@@ -105,7 +103,7 @@ class App extends React.Component {
           <div>
             <small>built by <a href="http://brandon-wang.me">brandon wang</a></small>
             <br/>
-            {/* <small>view on github</small> */}
+            <small>view on <a href="https://github.com/coconut750750/forty">github</a></small>
           </div>
 
         </div>
