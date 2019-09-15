@@ -48,7 +48,6 @@ class Lobby extends Component {
           exitGame={ () => this.props.exitGame() }/>
         <button type="button" className="btn btn-light" onClick={ () => this.props.socket.emit('startGame', {}) }>Start Game</button>
 
-        <br/>
         {this.state.message && <div class="alert alert-danger" role="alert">
           {this.state.message}
         </div>}

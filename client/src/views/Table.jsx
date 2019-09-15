@@ -218,8 +218,6 @@ class Table extends Component {
         <ExitButton
           mePlayer={this.state.mePlayer}
           exitGame={ () => this.props.exitGame() }/>
-
-        <br/>
       </div>
     );
   }

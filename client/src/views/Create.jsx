@@ -36,7 +36,6 @@ class Create extends Component {
           <button type="button" className="btn btn-light" onClick={ () => this.createGame() }>Create</button>
         </div>
 
-        <br/>
         {this.state.message && <div class="alert alert-danger" role="alert">
           {this.state.message}
         </div>}
