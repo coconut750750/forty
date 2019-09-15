@@ -10,6 +10,7 @@ import Join from 'views/Join';
 import Lobby from 'views/Lobby';
 import Table from 'views/Table';
 
+import Icon from 'components/Icon';
 import './App.css';
 
 class App extends React.Component {
@@ -86,19 +87,7 @@ class App extends React.Component {
               </div>
 
               <div className="col-3">
-                <div className="hand fan">
-                  <img
-                    className="playing-card"
-                    alt="logo"
-                    src="cards/4h.svg"
-                    style={{ height: "50px" }}/>
-                  <img
-                    className="playing-card"
-                    alt="logo"
-                    src="cards/0s.svg"
-                    style={{ height: "50px" }}/>
-                  
-                </div>
+                <Icon/>
               </div>
                 
             </div>
