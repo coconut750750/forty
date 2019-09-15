@@ -15,7 +15,7 @@ class Teams extends Component {
 
     return (
       <div>
-        <p>Choose teams</p>
+        <h5>Choose teams</h5>
 
         <br/>
 

@@ -25,7 +25,7 @@ class Create extends Component {
   render() {
     return (
       <div>
-        <p>Create Game</p>
+        <h5>Create Game</h5>
 
         <input type="name" className="form-control" placeholder="Enter your name" value={this.state.name} onChange={ e => this.setState({ name: e.target.value })}/>
         

@@ -31,7 +31,7 @@ class RoundEnd extends Component {
   render() {
     return (
       <div>
-        <p>Round End</p>
+        <h5>Round End</h5>
 
         {this.props.children}
 

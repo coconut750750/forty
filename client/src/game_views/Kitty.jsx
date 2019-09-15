@@ -83,7 +83,7 @@ class Kitty extends Component {
   render() {
     return (
       <div>
-        <p>Selecting 6 cards</p>
+        <h5>Selecting 6 cards</h5>
 
         {this.props.children}
 

@@ -33,7 +33,7 @@ class Join extends Component {
   render() {
     return (
       <div>
-        <p>Join Game</p>
+        <h5>Join Game</h5>
 
         <input type="name" className="form-control" placeholder="Enter game code" 
           value={this.state.gameCode} 

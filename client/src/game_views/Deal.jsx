@@ -25,7 +25,7 @@ class Deal extends Component {
   render() {
     return (
       <div>
-        <p>Dealing cards</p>
+        <h5>Dealing cards</h5>
 
         {this.props.children}
 

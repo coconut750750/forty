@@ -33,12 +33,12 @@ class Lobby extends Component {
   render() {
     return (
       <div>
-        <p>Lobby</p>
+        <h5>Lobby</h5>
         <GameCode gameCode={this.props.gameCode}/>
         
         <br/>
 
-        <p>Players</p>
+        <h6>Players</h6>
         <PlayerList players={this.state.players}/>
 
         <br/>
