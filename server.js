@@ -17,7 +17,7 @@ app.io = io;
 app.forty = new Forty(dev);
 
 app.post('/api/create', (req, res) => {
-  const game = app.forty.createGame();
+  const game = app.forty.createGame(req.body);
   
   res.send({
     gameCode: `${game.code}`

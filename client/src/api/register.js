@@ -1,8 +1,13 @@
 import { callApi } from './utils';
 
-export async function createGame() {
+export async function createGame(options) {
+  console.log(JSON.stringify(options));
   return callApi('api/create', {
     method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(options),
   });
 }
 

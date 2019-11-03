@@ -19,9 +19,9 @@ class Forty {
     }
   }
 
-  createGame(creatorName) {
+  createGame(options) {
     const code = this.generateCode();
-    const newGame = new Game(code, () => this.endGame(code));
+    const newGame = new Game(code, () => this.endGame(code), options);
     this.games[code] = newGame;
     return newGame;
   }

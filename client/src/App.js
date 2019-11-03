@@ -60,7 +60,7 @@ class App extends React.Component {
                 goBack={ () => this.setState({ viewState: "home" }) }/>,
       create: <Create
                 goBack={ () => this.setState({ viewState: "home" }) }
-                create={ name => createGame().then(res => this.setGame(res.gameCode, name)) }/>,
+                create={ (name, options) => createGame(options).then(res => this.setGame(res.gameCode, name)) }/>,
       join:   <Join
                 goBack={ () => this.setState({ viewState: "home" }) }
                 join={ (gameCode, name) => this.setGame(gameCode, name) }/>,

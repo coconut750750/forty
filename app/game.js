@@ -11,15 +11,19 @@ const KITTY_CARDS = 6;
 const PHASES = ['teams', 'deal', 'kitty', 'tricks', 'roundEnd'];
 
 const STARTING_LEVEL = 0;
-const LAST_LEVELS = RANKS.length - 1;
+const LAST_LEVEL = RANKS.length - 1;
 
 class Game {
-  constructor(code, onEnd) {
+  constructor(code, onEnd, options) {
     this.code = code;
     this.players = [];
     this.onEnd = onEnd;
 
     this.started = false;
+
+    // options
+    const { starting_level } = options;
+    this.starting_level = starting_level == undefined ? STARTING_LEVEL : starting_level;
   }
 
   addPlayer(playerName, socket) {
@@ -90,7 +94,7 @@ class Game {
   start() {
     this.started = true;
     this.phase = PHASES[0];
-    this.teamLevels = [STARTING_LEVEL, STARTING_LEVEL];
+    this.teamLevels = [this.starting_level, this.starting_level];
     this.teamNextStarts = [-1, -1];
 
     this.startIndex = Math.floor(Math.random() * MAX_PLAYERS);
@@ -307,12 +311,12 @@ class Game {
     }
     var defenseLevel = this.teamLevels[this.defenseTeam];
 
-    if (defenseLevel === RANKS.length - 1) {
+    if (defenseLevel === LAST_LEVEL) {
       this.endGame();
     } else if (this.points === 0 || this.points >= 100) {
-      this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 2, RANKS.length - 1);
+      this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 2, LAST_LEVEL);
     } else if (this.points <= 35 || this.points >= 80) {
-      this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 1, RANKS.length - 1);
+      this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 1, LAST_LEVEL);
     }
   }
 
