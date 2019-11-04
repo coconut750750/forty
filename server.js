@@ -102,6 +102,10 @@ app.io.on('connect', function (socket) {
     socket.emit('phase', { phase: game.phase });
   });
 
+  socket.on('getLevel', data => {
+    socket.send('level', { level: game.getTrumpRank() });
+  });
+
   socket.on('readyForAction', data => {
     if (name === game.getActionPlayerName()) {
       game.notifyActionPlayer();
@@ -114,7 +118,7 @@ app.io.on('connect', function (socket) {
 
   socket.on('startRound', data => {
     game.startRound();
-    game.notifyPlayerChange();
+    game.notifyPlayerUpdate();
     game.startDeal();
   });
 

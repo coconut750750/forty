@@ -27,6 +27,7 @@ class Table extends Component {
       mePlayer: undefined,
       meIndex: -1,
       hand: [],
+      level: undefined,
 
       trumpNeeded: false,
       trumpCardOnCircle: {},
@@ -77,6 +78,12 @@ class Table extends Component {
       this.props.socket.emit('readyForAction', {});
     });
 
+    this.props.socket.on('level', data => {
+      const { level } = data;
+      console.log(data);
+      this.setState({ level });
+    })
+
     this.props.socket.on('players', data => {
       const players = data.players.map(p => newPlayer(p));
       const meIndex = getMeIndex(players, this.props.name);
@@ -90,14 +97,15 @@ class Table extends Component {
     });
 
     this.props.socket.on('trump', data => {
-      if (data.card === undefined) {
+      const { card, name } = data;
+      if (card === undefined) {
         this.setState({ trumpNeeded: true });
       } else {
-        const trumpCard = new Card(data.card.rank, data.card.suit)
-        var trumpCardOnCircle = { [data.name]: trumpCard };
+        const trumpCard = new Card(card.rank, card.suit)
+        var trumpCardOnCircle = { [name]: trumpCard };
         this.setState({ trumpCardOnCircle });
 
-        if (data.name === "") {
+        if (name === "") {
           this.props.socket.emit('getKittyReveal', {});
         }
       }
@@ -151,6 +159,7 @@ class Table extends Component {
     this.props.socket.emit('getPhase', {});
     this.props.socket.emit('getHand', {});
     this.props.socket.emit('getTrump', {});
+    this.props.socket.emit('getLevel', {});
   }
 
   renderGameCircle(circleCards, centerCards, centerLabel) {
@@ -160,17 +169,18 @@ class Table extends Component {
     }
 
     const rightPlayer = this.state.players[(this.state.meIndex + 1) % nPlayers];
-    const acrossPlayer = this.state.players[(this.state.meIndex + 2) % nPlayers];
+    const topPlayer = this.state.players[(this.state.meIndex + 2) % nPlayers];
     const leftPlayer = this.state.players[(this.state.meIndex + 3) % nPlayers];
 
     return (
       <GameCircle
+        level={this.state.level}
         trumpCard={Object.values(this.state.trumpCardOnCircle)[0]}
-        acrossPlayer={acrossPlayer}
+        topPlayer={topPlayer}
         leftPlayer={leftPlayer}
         rightPlayer={rightPlayer}
-        cards={circleCards}
-        meCard={circleCards[this.state.mePlayer.name]}>
+        botPlayer={this.state.mePlayer}
+        cards={circleCards}>
         <LabeledCardGroup
           className="col-6"
           cards={centerCards}

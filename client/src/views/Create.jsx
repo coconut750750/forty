@@ -32,7 +32,7 @@ class Create extends Component {
         return;
       }
 
-      var startingLevel = this.state.startingLevel == undefined ? 0 : this.state.startingLevel.value
+      var startingLevel = this.state.startingLevel === undefined ? 0 : this.state.startingLevel.value
       this.props.create(this.state.name, { starting_level: startingLevel });
     });
   }

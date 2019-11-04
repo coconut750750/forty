@@ -6,19 +6,22 @@ import LabeledCardGroup from 'components/LabeledCardGroup';
 
 class GameCircle extends Component {
   render() {
-    const acrossCard = this.props.cards[this.props.acrossPlayer.name];
+    const topCard = this.props.cards[this.props.topPlayer.name];
     const leftCard = this.props.cards[this.props.leftPlayer.name];
     const rightCard = this.props.cards[this.props.rightPlayer.name];
+    const botCard = this.props.cards[this.props.botPlayer.name];
 
     return (
       <div>
         <div className="d-flex justify-content-center">
-          <div className="col-4"></div>
+          <div className="col-4">
+            <div className="badge m-2 badge-info">{`Level: ${this.props.level}`}</div>
+          </div>
 
           <Hand
             className="col-4"
-            player={this.props.acrossPlayer}
-            cards={acrossCard && [acrossCard]}/>
+            player={this.props.topPlayer}
+            cards={topCard && [topCard]}/>
 
           {this.props.trumpCard ?
           <LabeledCardGroup
@@ -46,7 +49,7 @@ class GameCircle extends Component {
         <div className="d-flex justify-content-center">
           <CardGroup
             className="col-4"
-            cards={this.props.meCard && [this.props.meCard]}/>
+            cards={botCard && [botCard]}/>
         </div>
       </div>
     );

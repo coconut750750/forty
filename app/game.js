@@ -34,7 +34,7 @@ class Game {
       () => this.getTrump(),
       () => this.getLead(),
     ));
-    this.notifyPlayerChange();
+    this.notifyPlayerUpdate();
   }
 
   playerExists(playerName) {
@@ -48,7 +48,7 @@ class Game {
   activatePlayer(playerName, socket) {
     this.getPlayer(playerName).active = true;
     this.getPlayer(playerName).socket = socket;
-    this.notifyPlayerChange();
+    this.notifyPlayerUpdate();
   }
 
   deactivatePlayer(playerName) {
@@ -57,7 +57,7 @@ class Game {
     if (this.allDeactivated()) {
       this.end();
     } else {
-      this.notifyPlayerChange();
+      this.notifyPlayerUpdate();
     }
   }
 
@@ -79,7 +79,7 @@ class Game {
     if (this.players.length === 0) {
       this.end();
     } else {
-      this.notifyPlayerChange();
+      this.notifyPlayerUpdate();
     }
   }
 
@@ -108,7 +108,7 @@ class Game {
 
   permute() {
     this.players = [this.players[0], ...this.players.slice(2, MAX_PLAYERS), this.players[1]];
-    this.notifyPlayerChange();
+    this.notifyPlayerUpdate();
   }
 
   onDefense(index) {
@@ -127,6 +127,7 @@ class Game {
     this.deck = newDeck();
     this.points = 0;
     this.level = this.teamLevels[this.defenseTeam];
+    this.notifyLevelChange();
 
     this.trumpCard = undefined;
     this.trumpSetter = undefined;
@@ -186,8 +187,12 @@ class Game {
     return this.trumpCard === undefined;
   }
 
+  getTrumpRank() {
+    return RANKS.charAt(this.level);
+  }
+
   setTrumpSuit(trumpSuit, name) {
-    this.trumpCard = new Card(RANKS.charAt(this.level), trumpSuit);
+    this.trumpCard = new Card(this.getTrumpRank(), trumpSuit);
     this.trumpCard.calibrate(this.trumpCard);
     calibrate(this.deck, this.trumpCard);
 
@@ -207,12 +212,12 @@ class Game {
     if (this.trumpCard !== undefined) {
       return this.trumpCard;
     }
-    const rank = RANKS.charAt(this.level);
+    const rank = this.getTrumpRank();
     return { rank };
   }
 
   forceSetTrump() {
-    const { suit, revealed } = getTrumpFromKitty(this.deck, RANKS.charAt(this.level));
+    const { suit, revealed } = getTrumpFromKitty(this.deck, this.getTrumpRank());
     this.trumpRevealed = revealed;
     this.setTrumpSuit(suit, "");
     this.notifyRevealed(revealed);
@@ -330,7 +335,7 @@ class Game {
     this.started = false;
   }
 
-  notifyPlayerChange() {
+  notifyPlayerUpdate() {
     this.players.forEach(player => player.send('players', this.getPlayerData()));
   }
 
@@ -340,6 +345,10 @@ class Game {
 
   notifyPhaseChange() {
     this.players.forEach(player => player.send('phase', { phase: this.phase }));
+  }
+
+  notifyLevelChange() {
+    this.players.forEach(player => player.send('level', { level: this.getTrumpRank() }));
   }
 
   notifyActionPlayer() {
