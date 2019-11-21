@@ -80,7 +80,6 @@ class Table extends Component {
 
     this.props.socket.on('level', data => {
       const { level } = data;
-      console.log(data);
       this.setState({ level });
     })
 

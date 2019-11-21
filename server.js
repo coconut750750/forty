@@ -63,7 +63,7 @@ app.get('/api/checkcode', (req, res) => {
   } else {
     res.send({ valid: false, message: 'This game code is invalid' });
   }
-})
+});
 
 app.io.on('connect', function (socket) {
   var game;
@@ -103,7 +103,7 @@ app.io.on('connect', function (socket) {
   });
 
   socket.on('getLevel', data => {
-    socket.send('level', { level: game.getTrumpRank() });
+    socket.emit('level', { level: game.getTrumpRank() });
   });
 
   socket.on('readyForAction', data => {
