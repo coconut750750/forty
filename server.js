@@ -29,7 +29,7 @@ app.get('/dump', (req, res) => {
   res.send();
 });
 
-app.get('/node_env', (req, res) => {
+app.get('/nodeenv', (req, res) => {
   res.send({ env: process.env.NODE_ENV });
 });
 
