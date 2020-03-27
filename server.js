@@ -29,10 +29,6 @@ app.get('/dump', (req, res) => {
   res.send();
 });
 
-app.get('/node_env', (req, res) => {
-  res.send({ env: process.env.NODE_ENV });
-});
-
 app.get('/api/checkname', (req, res) => {
   const { name } = req.query;
   if (name.length < 2 || name.length > 12) {
