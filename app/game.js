@@ -76,7 +76,7 @@ class Game {
 
   removePlayer(playerName) {
     var removedPlayer = _.remove(this.players, p => p.name == playerName);
-    if (this.players.length === 0) {
+    if (this.allDeactivated()) {
       this.end();
     } else {
       this.notifyPlayerUpdate();

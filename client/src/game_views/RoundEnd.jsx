@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import PlayerName from 'components/PlayerName';
 import RoundResults from 'components/RoundResults';
+import ExitButton from 'components/ExitButton';
 
 import Results from 'models/results';
 
@@ -49,6 +50,11 @@ class RoundEnd extends Component {
           onClick={ () => this.props.socket.emit('startRound', {}) }>Start Next Round</button>
         }
         <br/>
+        <br/>
+
+        <ExitButton
+          mePlayer={this.props.mePlayer}
+          exitGame={ () => this.props.exitGame() }/>
       </div>
     );
   }

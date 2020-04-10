@@ -214,7 +214,8 @@ class Table extends Component {
                 </Trick>,
       roundEnd: <RoundEnd
                   socket={this.props.socket}
-                  mePlayer={this.state.mePlayer}>
+                  mePlayer={this.state.mePlayer}
+                  exitGame={ () => this.props.exitGame() }>
                   {this.renderGameCircle(this.state.trickCardsOnCircle, this.state.kittyAfter, 'Revealed Cards')}
                 </RoundEnd>,
     };
@@ -224,9 +225,7 @@ class Table extends Component {
 
         {game_views[this.state.phase]}
 
-        <ExitButton
-          mePlayer={this.state.mePlayer}
-          exitGame={ () => this.props.exitGame() }/>
+        <br/>
       </div>
     );
   }
