@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import ExitButton from 'components/ExitButton';
 import GameCode from 'components/GameCode';
 import GameCircle from 'components/GameCircle';
 import LabeledCardGroup from 'components/LabeledCardGroup';

@@ -4,7 +4,7 @@ var Player = require('./player');
 var Card = require('./card');
 var Trick = require('./trick');
 var { newDeck, calibrate, getTrumpFromKitty } = require('./deckutils');
-const { RANKS } = require('./const');
+const { RANKS, LEVELS } = require('./const');
 
 const MAX_PLAYERS = 4;
 const KITTY_CARDS = 6;
@@ -348,7 +348,7 @@ class Game {
   }
 
   notifyLevelChange() {
-    this.players.forEach(player => player.send('level', { level: this.getTrumpRank() }));
+    this.players.forEach(player => player.send('level', { level: LEVELS[this.level] }));
   }
 
   notifyActionPlayer() {
