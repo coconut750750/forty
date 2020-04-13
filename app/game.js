@@ -398,9 +398,9 @@ class Game {
     return {
       points: this.points,
       defenders: defenders.map(p => p.json()),
-      defenseLevel: RANKS.charAt(this.teamLevels[this.defenseTeam]),
+      defenseLevel: LEVELS[this.teamLevels[this.defenseTeam]],
       challengers: challengers.map(p => p.json()),
-      challengeLevel: RANKS.charAt(this.teamLevels[1 - this.defenseTeam]),
+      challengeLevel: LEVELS[this.teamLevels[1 - this.defenseTeam]],
       gameOver: !this.started,
     };
   }
