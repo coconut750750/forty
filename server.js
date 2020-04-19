@@ -9,7 +9,7 @@ var io = require('socket.io')(server);
 
 const Forty = require('./app/forty');
 
-const port = process.env.PORT || 5000;
+const port = process.env.FORTY_PORT || process.env.PORT || 5000;
 const dev = process.env.NODE_ENV === 'dev';
 
 app.use(bodyParser.json());
