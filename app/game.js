@@ -133,6 +133,8 @@ class Game {
     this.trumpSetter = undefined;
     this.trumpRevealed = undefined;
 
+    this.pointCards = [];
+
     this.players.forEach((player, index) => {
       player.team = index % 2 === this.defenseTeam;
     });
@@ -277,6 +279,10 @@ class Game {
       if (!this.onDefense(this.winnerIndex)) {
         this.points += this.trick.calculatePoints();
       }
+
+      const newPointCards = !this.onDefense(this.winnerIndex) ? this.trick.getPointCards() : [];
+      this.pointCards = this.pointCards.concat(newPointCards);
+
       this.notifyTrickEnd();
       this.startTrick();
     } else {
@@ -370,10 +376,9 @@ class Game {
   }
 
   notifyTrickEnd() {
-    const cards = !this.onDefense(this.winnerIndex) ? this.trick.getPointCards() : [];
     this.players.forEach(player => player.send('trick', {
       points: this.points,
-      cards,
+      cards: this.pointCards,
       winner: this.winnerIndex,
     }));
   }

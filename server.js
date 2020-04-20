@@ -178,6 +178,14 @@ app.io.on('connect', function (socket) {
     socket.emit('play', { trick: game.trick.json() });
   });
 
+  socket.on('getTrick', data => {
+    socket.emit('trick', {
+      points: game.points,
+      cards: game.pointCards,
+      winner: game.winnerIndex,
+    });
+  });
+
   socket.on('getResults', data => {
     socket.emit('results', game.getResults());
   });

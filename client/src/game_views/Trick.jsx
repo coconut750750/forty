@@ -17,6 +17,7 @@ class Tricks extends Component {
       this.props.socket.emit('getHand', {});
     });
 
+    this.props.socket.emit('getTrick', {});
     this.props.socket.emit('getPlay', {});
   }
 

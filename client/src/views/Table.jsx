@@ -131,7 +131,7 @@ class Table extends Component {
       var players = this.state.players;
       players[data.winner].win();
 
-      var pointCards = this.state.pointCards;
+      var pointCards = [];
       data.cards.forEach(c => pointCards.push(new Card(c.rank, c.suit)));
 
       this.setState({ points: data.points, players, pointCards });
