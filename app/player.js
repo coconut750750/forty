@@ -25,10 +25,7 @@ class Player {
   }
 
   popCard(card) {
-    const index = _.findIndex(this.hand, c => c.rank == card.rank && c.suit === card.suit);
-    card = this.hand[index];
-    this.hand.splice(index, 1);
-    return card;
+    return _.remove(this.hand, c => c.rank == card.rank && c.suit === card.suit);
   }
 
   legalAllCards() {

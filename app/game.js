@@ -267,9 +267,17 @@ class Game {
     this.notifyActionPlayer();
   }
 
-  playCard(card) {
+  playCard(player, card) {
     const actionPlayer = this.players[this.actionIndex];
-    card = actionPlayer.popCard(card);
+    if (player.name !== actionPlayer) {
+      throw new Error("You cannot play cards right now");
+    }
+    const cards = actionPlayer.popCard(card);
+    if (cards.length !== 1) {
+      throw new Error("The card you played was not in your hand");
+    }
+
+    card = cards[0]
     actionPlayer.sendHand();
     this.trick.addCard(card, actionPlayer.name);
     this.notifyTrickUpdate();
@@ -319,12 +327,12 @@ class Game {
   updateWithResults() {
     if (this.points >= 40) {
       this.defenseTeam = 1 - this.defenseTeam;
+    } else if (this.teamLevels[this.defenseTeam] === LAST_LEVEL) {
+      this.endGame();
     }
     var defenseLevel = this.teamLevels[this.defenseTeam];
 
-    if (defenseLevel === LAST_LEVEL) {
-      this.endGame();
-    } else if (this.points === 0 || this.points >= 100) {
+    if (this.points === 0 || this.points >= 100) {
       this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 2, LAST_LEVEL);
     } else if (this.points <= 35 || this.points >= 80) {
       this.teamLevels[this.defenseTeam] = Math.min(defenseLevel + 1, LAST_LEVEL);

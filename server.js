@@ -171,7 +171,11 @@ app.io.on('connect', function (socket) {
   });
 
   socket.on('playCard', data => {
-    game.playCard(data.card);
+    try {
+      game.playCard(player, data.card);
+    } catch (err) {
+      socket.emit('message', { message: err.message });
+    }
   });
 
   socket.on('getPlay', data => {
