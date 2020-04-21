@@ -167,21 +167,26 @@ class Game {
   }
 
   deal(name) {
-    if (this.players[this.actionIndex].name === name && this.dealsLeft > 0) {
-      this.players[this.actionIndex].addCard(this.deck.pop());
-      this.players[this.actionIndex].sendHand();
-      this.dealsLeft--;
+    if (this.players[this.actionIndex].name !== name) {
+      throw new Error("It's not your turn to draw");
+    }
+    if (this.dealsLeft <= 0) {
+      throw new Error("No more cards to draw")
+    }
+    
+    this.players[this.actionIndex].addCard(this.deck.pop());
+    this.players[this.actionIndex].sendHand();
+    this.dealsLeft--;
 
-      if (this.dealsLeft === 0) {
-        if (this.trumpCard !== undefined) {
-          this.startKitty();
-        } else {
-          this.notifyNeedTrump();
-        }
+    if (this.dealsLeft === 0) {
+      if (this.trumpCard !== undefined) {
+        this.startKitty();
       } else {
-        this.nextActionPlayer();
-        this.notifyActionPlayer();
+        this.notifyNeedTrump();
       }
+    } else {
+      this.nextActionPlayer();
+      this.notifyActionPlayer();
     }
   }
 
@@ -328,6 +333,7 @@ class Game {
     if (this.points >= 40) {
       this.defenseTeam = 1 - this.defenseTeam;
     } else if (this.teamLevels[this.defenseTeam] === LAST_LEVEL) {
+      // defense team beat the last level
       this.endGame();
     }
     var defenseLevel = this.teamLevels[this.defenseTeam];

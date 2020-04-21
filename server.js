@@ -137,7 +137,11 @@ app.io.on('connect', function (socket) {
   });
 
   socket.on('draw', data => {
-    game.deal(name);
+    try {
+      game.deal(name);
+    } catch (err) {
+      socket.emit('message', { message: err.message });
+    }
   });
 
   socket.on('setTrump', data => {
