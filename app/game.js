@@ -291,10 +291,8 @@ class Game {
       this.winnerIndex = this.addTurn(this.winnerIndex, this.trick.determineWinnerPosition(this.trumpCard));
       if (!this.onDefense(this.winnerIndex)) {
         this.points += this.trick.calculatePoints();
+        this.pointCards = this.pointCards.concat(this.trick.getPointCards());
       }
-
-      const newPointCards = !this.onDefense(this.winnerIndex) ? this.trick.getPointCards() : [];
-      this.pointCards = this.pointCards.concat(newPointCards);
 
       this.notifyTrickEnd();
       this.startTrick();

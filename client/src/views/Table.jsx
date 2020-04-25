@@ -14,7 +14,7 @@ import Card from 'models/card';
 
 import { getMeIndex, newPlayer } from 'utils/player_utils';
 
-var _ = require('lodash');
+let _ = require('lodash');
 
 class Table extends Component {
   constructor(props) {
@@ -53,13 +53,13 @@ class Table extends Component {
   }
 
   resetPlayerTeams() {
-    var players = this.state.players;
+    let players = this.state.players;
     _.forEach(players, p => { p.team = undefined; });
     this.setState({ players });
   }
 
   resetPlayerWins() {
-    var players = this.state.players;
+    let players = this.state.players;
     _.forEach(players, p => p.resetWin());
     this.setState({ players });
   }
@@ -100,7 +100,7 @@ class Table extends Component {
         this.setState({ trumpNeeded: true });
       } else {
         const trumpCard = new Card(card.rank, card.suit)
-        var trumpCardOnCircle = { [name]: trumpCard };
+        let trumpCardOnCircle = { [name]: trumpCard };
         this.setState({ trumpCardOnCircle });
 
         if (name === "") {
@@ -110,36 +110,36 @@ class Table extends Component {
     });
 
     this.props.socket.on('reveal', data => {
-      var kittyBefore = data.revealed.map(c => new Card(c.rank, c.suit));
+      let kittyBefore = data.revealed.map(c => new Card(c.rank, c.suit));
       this.setState({ kittyBefore });
     });
 
     this.props.socket.on('hand', data => {
-      var hand = data.hand.map(c => new Card(c.rank, c.suit));
+      let hand = data.hand.map(c => new Card(c.rank, c.suit));
       this.setState({ hand });
 
       this.props.socket.emit('getLegalCards', {});
     });
 
     this.props.socket.on('legal', data => {
-      var hand = _.cloneDeep(this.state.hand);
+      let hand = _.cloneDeep(this.state.hand);
       data.cards.forEach(i => { hand[i].highlight = true; });
       this.setState({ hand });
     });
 
     this.props.socket.on('trick', data => {
-      var players = this.state.players;
+      let players = this.state.players;
       players[data.winner].win();
 
-      var pointCards = [];
+      let pointCards = [];
       data.cards.forEach(c => pointCards.push(new Card(c.rank, c.suit)));
 
       this.setState({ points: data.points, players, pointCards });
     });
 
     this.props.socket.on('play', data => {
-      var { trick } = data;
-      var trickCardsOnCircle = {};
+      let { trick } = data;
+      let trickCardsOnCircle = {};
       _.forEach(trick, (card, name) => { trickCardsOnCircle[name] = new Card(card.rank, card.suit); });
       this.setState({ trickCardsOnCircle });
 
@@ -149,7 +149,7 @@ class Table extends Component {
     });
 
     this.props.socket.on('kitty', data => {
-      var kittyAfter = data.cards.map(c => new Card(c.rank, c.suit));
+      let kittyAfter = data.cards.map(c => new Card(c.rank, c.suit));
       this.setState({ kittyAfter });
     });
 
