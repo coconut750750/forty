@@ -274,7 +274,7 @@ class Game {
 
   playCard(player, card) {
     const actionPlayer = this.players[this.actionIndex];
-    if (player.name !== actionPlayer) {
+    if (player.name !== actionPlayer.name) {
       throw new Error("You cannot play cards right now");
     }
     const cards = actionPlayer.popCard(card);
@@ -282,7 +282,7 @@ class Game {
       throw new Error("The card you played was not in your hand");
     }
 
-    card = cards[0]
+    card = cards[0];
     actionPlayer.sendHand();
     this.trick.addCard(card, actionPlayer.name);
     this.notifyTrickUpdate();
