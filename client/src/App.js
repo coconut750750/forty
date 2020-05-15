@@ -101,7 +101,7 @@ class App extends React.Component {
           <hr/>
 
           <div>
-            <small>built by <a href="https://brandon-wang.me">brandon wang</a></small>
+            <small>built by <a href="https://brandon-wang.com">brandon wang</a></small>
             <br/>
             <small>view on <a href="https://github.com/coconut750750/forty">github</a></small>
           </div>
