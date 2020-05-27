@@ -44,16 +44,21 @@ class Create extends Component {
 
         <input type="name" className="form-control" placeholder="Enter your name" value={this.state.name} onChange={ e => this.setState({ name: e.target.value })}/>
         
-        <br />
-        <h6>Options</h6>
-        <Select options={levels} placeholder="Starting Level" value={this.state.startingLevel} onChange={ v => this.setState({ startingLevel: v })}/>
+        <form onSubmit={ (e) => {
+          e.preventDefault();
+          this.createGame();
+        }}>
+          <br />
+          <h6>Options</h6>
+          <Select options={levels} placeholder="Starting Level" value={this.state.startingLevel} onChange={ v => this.setState({ startingLevel: v })}/>
 
-        <br/>
+          <br/>
 
-        <div className="row d-flex justify-content-center">
-          <button type="button" className="btn btn-light" onClick={this.props.goBack}>Back</button>
-          <button type="button" className="btn btn-light" onClick={ () => this.createGame() }>Create</button>
-        </div>
+          <div className="row d-flex justify-content-center">
+            <button type="button" className="btn btn-light" onClick={this.props.goBack}>Back</button>
+            <button type="submit" className="btn btn-light">Create</button>
+          </div>
+        </form>
 
         {this.state.message && <div class="alert alert-danger" role="alert">
           {this.state.message}
