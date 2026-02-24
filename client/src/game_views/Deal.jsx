@@ -33,7 +33,7 @@ class Deal extends Component {
           isActive
           player={this.props.mePlayer}
           cards={this.props.hand}
-          click={ c => this.props.socket.emit('setTrump', { suit: c.suit }) }/>
+          click={ c => this.props.socket.emit('setTrump', { card: c.json() }) }/>
 
         {this.props.trumpNeeded && this.props.mePlayer.isAdmin ? 
           <button type="button" className="btn btn-light" 

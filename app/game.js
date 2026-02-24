@@ -200,7 +200,11 @@ class Game {
     return RANKS.charAt(this.level);
   }
 
-  setTrumpSuit(trumpSuit, name) {
+  setTrumpSuit(card, name) {
+    if (card.rank !== this.getTrumpRank()) {
+      throw new Error("Invalid card to set trump suit")
+    }
+    const trumpSuit = card.suit;
     this.trumpCard = new Card(this.getTrumpRank(), trumpSuit);
     this.trumpCard.calibrate(this.trumpCard);
     calibrate(this.deck, this.trumpCard);

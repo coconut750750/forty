@@ -58,8 +58,8 @@ function socketio(socket, game, name, player) {
   });
 
   socket.on('setTrump', data => {
-    const { suit } = data;
-    game.setTrumpSuit(suit, name);
+    const { card } = data;
+    game.setTrumpSuit(card, name);
   });
 
   socket.on('setTrumpFromKitty', data => {
