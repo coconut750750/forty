@@ -78,11 +78,11 @@ class PlayerManager {
   }
 
   filter(f) {
-    return this.players.filter((player, index) => f(player, index));
+    return this.order.filter((name, index) => f(this.players.get(name), index)).map(name => this.players.get(name));
   }
 
   forEach(f) {
-    this.players.forEach((player, index) => f(player, index));
+    this.order.forEach((name, index) => f(this.players.get(name), index));
   }
 
   map(f) {
