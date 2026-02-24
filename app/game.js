@@ -1,5 +1,6 @@
 var _ = require('lodash');
 
+var PlayerManager = require('./playermanager');
 var Player = require('./player');
 var Card = require('./card');
 var Trick = require('./trick');
@@ -16,7 +17,7 @@ const LAST_LEVEL = RANKS.length - 1;
 class Game {
   constructor(code, onEnd, options) {
     this.code = code;
-    this.players = [];
+    this.pm = new PlayerManager();
     this.onEnd = onEnd;
 
     this.started = false;
@@ -27,10 +28,10 @@ class Game {
   }
 
   addPlayer(playerName, socket) {
-    this.players.push(new Player(
+    this.pm.add(playerName, new Player(
       playerName,
       socket,
-      this.players.length == 0,
+      this.pm.count() == 0,
       () => this.getTrump(),
       () => this.getLead(),
     ));
@@ -38,22 +39,26 @@ class Game {
   }
 
   playerExists(playerName) {
-    return _.filter(this.players, p => p.name == playerName).length > 0;
+    return this.pm.exists(playerName);
   }
 
   getPlayer(playerName) {
-    return _.filter(this.players, p => p.name == playerName)[0];
+    return this.pm.get(playerName);
   }
 
   activatePlayer(playerName, socket) {
-    this.getPlayer(playerName).active = true;
-    this.getPlayer(playerName).socket = socket;
+    this.pm.do(playerName, player => {
+      player.active = true;
+      player.socket = socket;
+    });
     this.notifyPlayerUpdate();
   }
 
   deactivatePlayer(playerName) {
-    this.getPlayer(playerName).active = false;
-    this.getPlayer(playerName).socket = undefined;
+    this.pm.do(playerName, player => {
+      player.active = false;
+      player.socket = undefined;
+    });
     if (this.allDeactivated()) {
       this.end();
     } else {
@@ -62,12 +67,7 @@ class Game {
   }
 
   allDeactivated() {
-    for (var p of this.players) {
-      if (p.active) {
-        return false;
-      }
-    }
-    return true;
+    return this.pm.all(p => !p.active);
   }
 
   isActive(playerName) {
@@ -75,7 +75,7 @@ class Game {
   }
 
   removePlayer(playerName) {
-    var removedPlayer = _.remove(this.players, p => p.name == playerName);
+    this.pm.remove(playerName);
     if (this.allDeactivated()) {
       this.end();
     } else {
@@ -84,11 +84,11 @@ class Game {
   }
 
   isFull() {
-    return this.players.length >= MAX_PLAYERS;
+    return this.pm.count() >= MAX_PLAYERS;
   }
 
   getPlayerData() {
-    return { players: this.players.map(p => p.json()) };
+    return { players: this.pm.map(p => p.json()) };
   }
 
   start() {
@@ -107,7 +107,7 @@ class Game {
   }
 
   permute() {
-    this.players = [this.players[0], ...this.players.slice(2, MAX_PLAYERS), this.players[1]];
+    this.pm.permuteOrder();
     this.notifyPlayerUpdate();
   }
 
@@ -116,11 +116,11 @@ class Game {
   }
 
   getDefenseTeam() {
-    return this.players.filter((_, index) => this.onDefense(index));
+    return this.pm.filter((_, index) => this.onDefense(index));
   }
 
   getOffenseTeam() {
-    return this.players.filter((_, index) => !this.onDefense(index));
+    return this.pm.filter((_, index) => !this.onDefense(index));
   }
 
   startRound() {
@@ -135,7 +135,7 @@ class Game {
 
     this.pointCards = [];
 
-    this.players.forEach((player, index) => {
+    this.pm.forEach((player, index) => {
       player.team = index % 2 === this.defenseTeam;
     });
 
@@ -149,7 +149,7 @@ class Game {
     if (this.actionIndex === undefined) {
       return undefined;
     }
-    return this.players[this.actionIndex].name;
+    return this.pm.getN(this.actionIndex).name;
   }
 
   addTurn(start, inc) {
@@ -167,15 +167,17 @@ class Game {
   }
 
   deal(name) {
-    if (this.players[this.actionIndex].name !== name) {
+    if (this.pm.indexOf(name) !== this.actionIndex) {
       throw new Error("It's not your turn to draw");
     }
     if (this.dealsLeft <= 0) {
       throw new Error("No more cards to draw")
     }
     
-    this.players[this.actionIndex].addCard(this.deck.pop());
-    this.players[this.actionIndex].sendHand();
+    this.pm.doN(this.actionIndex, player => {
+      player.addCard(this.deck.pop());
+      player.sendHand();
+    });
     this.dealsLeft--;
 
     if (this.dealsLeft === 0) {
@@ -203,9 +205,9 @@ class Game {
     this.trumpCard.calibrate(this.trumpCard);
     calibrate(this.deck, this.trumpCard);
 
-    this.players.forEach(player => calibrate(player.hand, this.trumpCard));
-    this.players.forEach(player => player.sortHand());
-    this.players.forEach(player => player.sendHand());
+    this.pm.doAll(player => calibrate(player.hand, this.trumpCard));
+    this.pm.doAll(player => player.sortHand());
+    this.pm.doAll(player => player.sendHand());
 
     this.trumpSetter = name;
     this.notifyTrumpSet();
@@ -235,8 +237,10 @@ class Game {
     this.phase = PHASES[2];
     this.notifyPhaseChange();
 
-    this.players[this.actionIndex].addCards(this.deck);
-    this.players[this.actionIndex].sendHand();
+    this.pm.doN(this.actionIndex, player => {
+      player.addCards(this.deck);
+      player.sendHand();
+    })
     this.deck = [];
 
     this.notifyActionPlayer();
@@ -245,8 +249,8 @@ class Game {
   setKitty(cards) {
     cards.map(c => new Card(c.rank, c.suit));
     this.kitty = cards;
-    cards.forEach(c => this.players[this.actionIndex].popCard(c));
-    this.players[this.actionIndex].sendHand();
+    cards.forEach(c => this.pm.doN(this.actionIndex, player => player.popCard(c)));
+    this.pm.doN(this.actionIndex, player => player.sendHand());
 
     this.phase = PHASES[3];
     this.notifyPhaseChange();
@@ -255,7 +259,7 @@ class Game {
   }
 
   startTrick() {
-    if (this.players[0].hand.length === 0) {
+    if (this.pm.getN(0).hand.length === 0) {
       this.endRound();
       return;
     }
@@ -273,7 +277,7 @@ class Game {
   }
 
   playCard(player, card) {
-    const actionPlayer = this.players[this.actionIndex];
+    const actionPlayer = this.pm.getN(this.actionIndex);
     if (player.name !== actionPlayer.name) {
       throw new Error("You cannot play cards right now");
     }
@@ -354,41 +358,41 @@ class Game {
   }
 
   notifyPlayerUpdate() {
-    this.players.forEach(player => player.send('players', this.getPlayerData()));
+    this.pm.doAll(player => player.send('players', this.getPlayerData()));
   }
 
   notifyGameStart() {
-    this.players.forEach(player => player.send('start', {}));
+    this.pm.doAll(player => player.send('start', {}));
   }
 
   notifyPhaseChange() {
-    this.players.forEach(player => player.send('phase', { phase: this.phase }));
+    this.pm.doAll(player => player.send('phase', { phase: this.phase }));
   }
 
   notifyLevelChange() {
-    this.players.forEach(player => player.send('level', { level: LEVELS[this.level] }));
+    this.pm.doAll(player => player.send('level', { level: LEVELS[this.level] }));
   }
 
   notifyActionPlayer() {
     if (this.actionIndex !== undefined) {
-      this.players[this.actionIndex].send('action', {});
+      this.pm.doN(this.actionIndex, player => player.send('action', {}));
     }
   }
 
   notifyNeedTrump() {
-    this.players.forEach(player => player.send('trump', {}));
+    this.pm.doAll(player => player.send('trump', {}));
   }
 
   notifyTrumpSet() {
-    this.players.forEach(player => player.send('trump', { card: this.trumpCard.json(), name: this.trumpSetter }));
-  }
+    this.pm.doAll(player => player.send('trump', { card: this.trumpCard.json(), name: this.trumpSetter }));
+  }+
 
   notifyRevealed(revealed) {
-    this.players.forEach(player => player.send('reveal', { revealed }));
+    this.pm.doAll(player => player.send('reveal', { revealed }));
   }
 
   notifyTrickEnd() {
-    this.players.forEach(player => player.send('trick', {
+    this.pm.doAll(player => player.send('trick', {
       points: this.points,
       cards: this.pointCards,
       winner: this.winnerIndex,
@@ -396,16 +400,16 @@ class Game {
   }
 
   notifyTrickUpdate() {
-    this.players.forEach(player => player.send('play', { trick: this.trick.json() }));
+    this.pm.doAll(player => player.send('play', { trick: this.trick.json() }));
   }
 
   notifyKittyReveal() {
-    this.players.forEach(player => player.send('kitty', { cards: this.kitty }));
+    this.pm.doAll(player => player.send('kitty', { cards: this.kitty }));
   }
 
   notifyResults() {
     const results = this.getResults();
-    this.players.forEach(player => player.send('results', results));
+    this.pm.doAll(player => player.send('results', results));
   }
 
   getResults() {
@@ -423,7 +427,7 @@ class Game {
   }
 
   end() {
-    this.players.forEach(player => player.send('end', {}));
+    this.pm.doAll(player => player.send('end', {}));
     this.onEnd();
   }
 }
