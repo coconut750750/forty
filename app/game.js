@@ -136,7 +136,7 @@ class Game {
     this.pointCards = [];
 
     this.pm.forEach((player, index) => {
-      player.team = index % 2 === this.defenseTeam;
+      player.isDefending = index % 2 === this.defenseTeam;
     });
 
     this.actionIndex = this.startIndex;
@@ -385,7 +385,7 @@ class Game {
 
   notifyTrumpSet() {
     this.pm.doAll(player => player.send('trump', { card: this.trumpCard.json(), name: this.trumpSetter }));
-  }+
+  }
 
   notifyRevealed(revealed) {
     this.pm.doAll(player => player.send('reveal', { revealed }));

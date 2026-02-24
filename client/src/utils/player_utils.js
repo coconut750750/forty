@@ -11,5 +11,5 @@ export function getMePlayer(players, name) {
 }
 
 export function newPlayer(playerJson) {
-  return new Player(playerJson.name, playerJson.isAdmin, playerJson.active, playerJson.team);
+  return new Player(playerJson.name, playerJson.isAdmin, playerJson.active, playerJson.isDefending);
 }

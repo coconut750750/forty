@@ -12,6 +12,7 @@ class Player {
     this.getLead = getLead;
 
     this.active = true;
+    this.isDefending = undefined;
   }
 
   addCards(cards) {
@@ -55,7 +56,7 @@ class Player {
       name: this.name,
       isAdmin: this.isAdmin,
       active: this.active,
-      team: this.team,
+      isDefending: this.isDefending,
     };
   }
 

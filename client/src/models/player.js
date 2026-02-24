@@ -1,9 +1,9 @@
 export default class Player {
-  constructor(name, isAdmin, active, team) {
+  constructor(name, isAdmin, active, isDefending) {
     this.name = name;
     this.isAdmin = isAdmin;
     this.active = active;
-    this.team = team;
+    this.isDefending = isDefending;
 
     this.winner = false;
   }
@@ -14,9 +14,5 @@ export default class Player {
 
   resetWin() {
     this.winner = false;
-  }
-
-  isDefending() {
-    return this.team;
   }
 }

@@ -54,7 +54,7 @@ class Table extends Component {
 
   resetPlayerTeams() {
     let players = this.state.players;
-    _.forEach(players, p => { p.team = undefined; });
+    _.forEach(players, p => { p.isDefending = undefined; });
     this.setState({ players });
   }
 

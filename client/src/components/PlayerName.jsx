@@ -4,8 +4,8 @@ class PlayerName extends Component {
   getBadgeClass() {
     if (!this.props.player.active) {
       return "badge-light";
-    } else if (this.props.player.team !== undefined) {
-      return this.props.player.isDefending() ? "badge-primary" : "badge-secondary";
+    } else if (this.props.player.isDefending !== undefined) {
+      return this.props.player.isDefending ? "badge-primary" : "badge-secondary";
     } else {
       return "badge-dark";
     }
