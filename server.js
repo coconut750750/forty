@@ -8,6 +8,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
 const Forty = require('./app/forty');
+const gameSocketio = require('./app/socketio');
 
 const port = process.env.FORTY_PORT || process.env.PORT || 5000;
 const dev = process.env.NODE_ENV === 'dev';
@@ -31,8 +32,8 @@ app.get('/dump', (req, res) => {
 
 app.get('/api/checkname', (req, res) => {
   const { name } = req.query;
-  if (name.length < 2 || name.length > 12) {
-    res.send({ valid: false, message: 'Your name must be between 2 and 12 characters long' });
+  if (name.length < 1 || name.length > 16) {
+    res.send({ valid: false, message: 'Your name must be between 1 and 16 characters long' });
     return;
   }
 
@@ -84,118 +85,8 @@ app.io.on('connect', function (socket) {
       socket.emit('start', {});
     }
     player = game.getPlayer(name);
-  });
 
-  socket.on('getPlayers', data => {
-    socket.emit('players', game.getPlayerData());
-  });
-
-  socket.on('startGame', data => {
-    if (game.isFull()) {
-      game.start();
-    } else {
-      socket.emit('startFail', { message: 'Not enough players have joined the game' });
-    }
-  });
-
-  socket.on('getPhase', data => {
-    socket.emit('phase', { phase: game.phase });
-  });
-
-  socket.on('getLevel', data => {
-    socket.emit('level', { level: game.getTrumpRank() });
-  });
-
-  socket.on('readyForAction', data => {
-    if (name === game.getActionPlayerName()) {
-      game.notifyActionPlayer();
-    }
-  });
-
-  socket.on('permutePlayers', data => {
-    game.permute();
-  });
-
-  socket.on('startRound', data => {
-    game.startRound();
-    game.notifyPlayerUpdate();
-    game.startDeal();
-  });
-
-  socket.on('getHand', data => {
-    player.sendHand();
-  });
-
-  socket.on('getLegalCards', data => {
-    if (game.canSetTrumpSuit()) {
-      player.sendCardsToReveal();
-    } else if (game.phase === 'kitty' && name === game.getActionPlayerName()) {
-      player.sendCardsForKitty();
-    } else if (game.phase === 'tricks' && name === game.getActionPlayerName()) {
-      player.sendCardsToPlay();
-    }
-  });
-
-  socket.on('draw', data => {
-    try {
-      game.deal(name);
-    } catch (err) {
-      socket.emit('message', { message: err.message });
-    }
-  });
-
-  socket.on('setTrump', data => {
-    const { suit } = data;
-    game.setTrumpSuit(suit, name);
-  });
-
-  socket.on('setTrumpFromKitty', data => {
-    game.forceSetTrump();
-  });
-
-  socket.on('getKittyReveal', data => {
-    game.notifyRevealed(game.trumpRevealed)
-  });
-
-  socket.on('getTrump', data => {
-    if (game.trumpCard !== undefined) {
-      socket.emit('trump', { card: game.trumpCard.json(), name: game.trumpSetter });
-    }
-  });
-
-  socket.on('setKitty', data => {
-    game.setKitty(data.cards);
-    game.startTrick();
-  });
-
-  socket.on('getKitty', data => {
-    if (game.phase === 'roundEnd') {
-      socket.emit('kitty', { cards: game.kitty });
-    }
-  });
-
-  socket.on('playCard', data => {
-    try {
-      game.playCard(player, data.card);
-    } catch (err) {
-      socket.emit('message', { message: err.message });
-    }
-  });
-
-  socket.on('getPlay', data => {
-    socket.emit('play', { trick: game.trick.json() });
-  });
-
-  socket.on('getTrick', data => {
-    socket.emit('trick', {
-      points: game.points,
-      cards: game.pointCards,
-      winner: game.winnerIndex,
-    });
-  });
-
-  socket.on('getResults', data => {
-    socket.emit('results', game.getResults());
+    gameSocketio(socket, game, name, player);
   });
 
   socket.on('exitGame', data => {
