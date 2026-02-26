@@ -58,8 +58,8 @@ function socketio(socket, game, name, player) {
   });
 
   socket.on('setTrump', data => {
-    const { card } = data;
-    game.setTrumpSuit(card, name);
+    const { cards } = data;
+    game.setTrumpSuit(cards, name);
   });
 
   socket.on('setTrumpFromKitty', data => {
@@ -67,7 +67,7 @@ function socketio(socket, game, name, player) {
   });
 
   socket.on('getKittyReveal', data => {
-    game.notifyRevealed(game.trumpRevealed)
+    game.notifyKittyRevealed()
   });
 
   socket.on('getTrump', data => {

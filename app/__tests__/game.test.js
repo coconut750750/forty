@@ -2,7 +2,7 @@ var Game = require('../game');
 var Card = require('../card');
 
 test('generate deck', () => {
-  var game = new Game('code', undefined);
+  var game = new Game('code', undefined, {});
 
   game.start();
   game.startRound();
@@ -10,11 +10,11 @@ test('generate deck', () => {
 });
 
 test('calibrate deck', () => {
-  var game = new Game('code', undefined);
+  var game = new Game('code', undefined, {});
 
   game.start();
   game.startRound();
   expect(game.deck[0].family).toBe(undefined);
-  game.setTrumpSuit('s');
+  game.setTrumpSuit([new Card('2', 's')]);
   expect(game.deck[0].family).not.toBe(undefined);
 })

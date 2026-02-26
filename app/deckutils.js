@@ -41,18 +41,18 @@ function calibrate(deck, trumpCard) {
 }
 
 function getTrumpFromKitty(kitty, trumpRank) {
-    var revealed = [];
-    var highest = kitty[0];
-    for (var card of kitty) {
-      revealed.push(card);
-      if (card.rank === trumpRank) {
-        return { suit: card.suit, revealed };
-      } else if (RANKS.indexOf(card.rank) > RANKS.indexOf(highest.rank)) {
-        highest = card;
-      }
+  var revealed = [];
+  var highest = kitty[0];
+  for (var card of kitty) {
+    revealed.push(card);
+    if (card.rank === trumpRank) {
+      return { card, revealed };
+    } else if (RANKS.indexOf(card.rank) > RANKS.indexOf(highest.rank)) {
+      highest = card;
     }
+  }
 
-    return { suit: highest.suit, revealed };
+  return { card: new Card(trumpRank, highest.suit), revealed };
 }
 
 module.exports = {

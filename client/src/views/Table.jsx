@@ -109,7 +109,7 @@ class Table extends Component {
       }
     });
 
-    this.props.socket.on('reveal', data => {
+    this.props.socket.on('kittyReveal', data => {
       let kittyBefore = data.revealed.map(c => new Card(c.rank, c.suit));
       this.setState({ kittyBefore });
     });

@@ -6,6 +6,7 @@ var Card = require('./card');
 var Trick = require('./trick');
 var { newDeck, calibrate, getTrumpFromKitty } = require('./deckutils');
 const { RANKS, LEVELS } = require('./const');
+var errors = require('./errors');
 
 const MAX_PLAYERS = 4;
 const KITTY_CARDS = 6;
@@ -131,7 +132,7 @@ class Game {
 
     this.trumpCard = undefined;
     this.trumpSetter = undefined;
-    this.trumpRevealed = undefined;
+    this.kittyRevealed = undefined;
 
     this.pointCards = [];
 
@@ -200,12 +201,17 @@ class Game {
     return RANKS.charAt(this.level);
   }
 
-  setTrumpSuit(card, name) {
-    if (card.rank !== this.getTrumpRank()) {
-      throw new Error("Invalid card to set trump suit")
+  setTrumpSuit(cards, name) {
+    if (!this.canSetTrumpSuit()) {
+      throw errors.ErrorInvalidTrumpReveal;
     }
-    const trumpSuit = card.suit;
-    this.trumpCard = new Card(this.getTrumpRank(), trumpSuit);
+    for (let card of cards) {
+      if (card.rank !== this.getTrumpRank()) {
+        throw errors.ErrorInvalidTrumpReveal;
+      }
+    }
+
+    this.trumpCard = new Card(this.getTrumpRank(), cards[0].suit);
     this.trumpCard.calibrate(this.trumpCard);
     calibrate(this.deck, this.trumpCard);
 
@@ -230,10 +236,13 @@ class Game {
   }
 
   forceSetTrump() {
-    const { suit, revealed } = getTrumpFromKitty(this.deck, this.getTrumpRank());
-    this.trumpRevealed = revealed;
-    this.setTrumpSuit(suit, "");
-    this.notifyRevealed(revealed);
+    if (this.trumpCard !== undefined) {
+      throw errors.ErrorCannotForceSetTrump;
+    }
+    const { card, revealed } = getTrumpFromKitty(this.deck, this.getTrumpRank());
+    this.kittyRevealed = revealed;
+    this.setTrumpSuit([card], "");
+    this.notifyKittyRevealed();
   }
 
   startKitty() {
@@ -296,18 +305,22 @@ class Game {
     this.notifyTrickUpdate();
 
     if (this.trick.cards.length === MAX_PLAYERS) {
-      this.winnerIndex = this.addTurn(this.winnerIndex, this.trick.determineWinnerPosition(this.trumpCard));
-      if (!this.onDefense(this.winnerIndex)) {
-        this.points += this.trick.calculatePoints();
-        this.pointCards = this.pointCards.concat(this.trick.getPointCards());
-      }
-
-      this.notifyTrickEnd();
-      this.startTrick();
+      this.endTrick();
     } else {
       this.nextActionPlayer();
       this.notifyActionPlayer();
     }
+  }
+
+  endTrick() {
+    this.winnerIndex = this.addTurn(this.winnerIndex, this.trick.determineWinnerPosition(this.trumpCard));
+    if (!this.onDefense(this.winnerIndex)) {
+      this.points += this.trick.calculatePoints();
+      this.pointCards = this.pointCards.concat(this.trick.getPointCards());
+    }
+
+    this.notifyTrickEnd();
+    this.startTrick();
   }
 
   getLead() {
@@ -391,8 +404,8 @@ class Game {
     this.pm.doAll(player => player.send('trump', { card: this.trumpCard.json(), name: this.trumpSetter }));
   }
 
-  notifyRevealed(revealed) {
-    this.pm.doAll(player => player.send('reveal', { revealed }));
+  notifyKittyRevealed() {
+    this.pm.doAll(player => player.send('kittyReveal', { revealed: this.kittyRevealed }));
   }
 
   notifyTrickEnd() {
