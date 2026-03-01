@@ -33,12 +33,8 @@ describe('game deal test', () => {
 
     const g = startedGame(players, () => {}, { starting_level: 0 });
     g.startRound();
-    g.startDeal();
-
-    while (g.dealsLeft > 0) {
-      let actionPlayer = g.getActionPlayerName();
-      g.deal(actionPlayer);
-    }
+    g.dealDelay = 0;
+    g.deal();
 
     g.pm.doAll(player => player.sendCardsToReveal());
 
@@ -73,13 +69,8 @@ describe('game deal test', () => {
 
     const g = startedGame(players, () => {}, { starting_level: 0 });
     g.startRound();
-    g.startDeal();
-
-    // deal all cards except one so we don't start the kitty
-    while (g.dealsLeft > 1) {
-      let actionPlayer = g.getActionPlayerName();
-      g.deal(actionPlayer);
-    }
+    g.dealDelay = 0;
+    g.deal();
 
     g.pm.doAll(player => player.sendCardsToReveal());
 
@@ -98,7 +89,7 @@ describe('game deal test', () => {
         const player = g.getPlayer(p);
 
         // successfully set trump suit
-        if (trumpBroadcast == undefined) {
+        if (trumpBroadcast.card == undefined) {
           g.playerSetTrumpSuit(player, [trumpIndex]);
           expect(g.trumpCard.rank).toBe('2');
           expect(g.trumpCard.suit).toBe(card.suit);
@@ -132,13 +123,8 @@ describe('game deal test', () => {
 
     const g = startedGame(players, () => {}, { starting_level: 0 });
     g.startRound();
-    g.startDeal();
-
-    // deal all cards
-    while (g.dealsLeft > 0) {
-      let actionPlayer = g.getActionPlayerName();
-      g.deal(actionPlayer);
-    }
+    g.dealDelay = 0;
+    g.deal();
 
     g.forceSetTrumpSuit();
 
@@ -161,12 +147,8 @@ describe('game deal test', () => {
 
     const g = startedGame(players, () => {}, { starting_level: 0 });
     g.startRound();
-    g.startDeal();
-
-    while (g.dealsLeft > 0) {
-      let actionPlayer = g.getActionPlayerName();
-      g.deal(actionPlayer);
-    }
+    g.dealDelay = 0;
+    g.deal();
 
     g.forceSetTrumpSuit();
 

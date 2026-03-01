@@ -5,21 +5,6 @@ import Hand from 'components/Hand';
 class Deal extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      dealActive: false,
-    };
-  }
-
-  componentDidMount() {
-    this.props.socket.on('action', data => {
-      this.setState({ dealActive: true });
-    });
-  }
-
-  draw() {
-    this.props.socket.emit('draw', {});
-    this.setState({ dealActive: false });
   }
 
   render() {
@@ -35,13 +20,9 @@ class Deal extends Component {
           cards={this.props.hand}
           click={ (c, index) => this.props.socket.emit('setTrump', { indexes: [index] }) }/>
 
-        {this.props.trumpNeeded && this.props.mePlayer.isAdmin ? 
+        {this.props.trumpNeeded && this.props.mePlayer.isAdmin &&
           <button type="button" className="btn btn-light" 
             onClick={ () => this.props.socket.emit('setTrumpFromKitty', {}) }>Force Trump</button>
-          :
-          <button type="button" className="btn btn-light" 
-            onClick={ () => this.draw() }
-            disabled={!this.state.dealActive}>Draw</button>
         }
         <br/>
 

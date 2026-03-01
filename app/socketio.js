@@ -31,8 +31,7 @@ function socketio(socket, game, name, player) {
 
   socket.on('startRound', data => {
     game.startRound();
-    game.notifyPlayerUpdate();
-    game.startDeal();
+    game.deal();
   });
 
   socket.on('getHand', data => {
@@ -46,14 +45,6 @@ function socketio(socket, game, name, player) {
       player.sendCardsForKitty();
     } else if (game.phase === 'tricks' && name === game.getActionPlayerName()) {
       player.sendCardsToPlay();
-    }
-  });
-
-  socket.on('draw', data => {
-    try {
-      game.deal(name);
-    } catch (err) {
-      socket.emit('message', { message: err.message });
     }
   });
 

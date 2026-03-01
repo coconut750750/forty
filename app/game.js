@@ -12,6 +12,8 @@ const MAX_PLAYERS = 4;
 const KITTY_CARDS = 6;
 const PHASES = ['teams', 'deal', 'kitty', 'tricks', 'roundEnd'];
 
+const DEAL_DELAY = 1000 / MAX_PLAYERS;
+
 const STARTING_LEVEL = 0;
 const LAST_LEVEL = RANKS.length - 1;
 
@@ -26,6 +28,7 @@ class Game {
     // options
     const { starting_level } = options;
     this.starting_level = starting_level == undefined ? STARTING_LEVEL : starting_level;
+    this.dealDelay = DEAL_DELAY;
   }
 
   addPlayer(playerName, socket) {
@@ -136,6 +139,9 @@ class Game {
 
     this.pointCards = [];
 
+    this.kitty = [];
+    this.dealsLeft = this.deck.length - KITTY_CARDS;
+
     this.pm.forEach((player, index) => {
       player.isDefending = index % 2 === this.defenseTeam;
     });
@@ -144,6 +150,7 @@ class Game {
 
     this.phase = PHASES[1];
     this.notifyPhaseChange();
+    this.notifyPlayerUpdate();
   }
 
   getActionPlayerName() {
@@ -161,35 +168,26 @@ class Game {
     this.actionIndex = this.addTurn(this.actionIndex, 1);
   }
 
-  startDeal() {
-    this.kitty = [];
-    this.dealsLeft = this.deck.length - KITTY_CARDS;
-    this.notifyActionPlayer();
-  }
-
-  deal(name) {
-    if (this.pm.indexOf(name) !== this.actionIndex) {
-      throw new Error("It's not your turn to draw");
-    }
-    if (this.dealsLeft <= 0) {
-      throw new Error("No more cards to draw")
-    }
-    
+  deal() {
     this.pm.doN(this.actionIndex, player => {
       player.addCard(this.deck.pop());
       player.sendHand();
     });
     this.dealsLeft--;
+    this.nextActionPlayer();
 
-    if (this.dealsLeft === 0) {
+    if (this.dealsLeft > 0) {
+      if (this.dealDelay === 0) {
+        this.deal();
+      } else {
+        setTimeout(() => this.deal(), this.dealDelay);
+      }
+    } else {
       if (this.trumpCard !== undefined) {
         this.startKitty();
       } else {
         this.notifyNeedTrump();
       }
-    } else {
-      this.nextActionPlayer();
-      this.notifyActionPlayer();
     }
   }
 
