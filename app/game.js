@@ -213,7 +213,7 @@ class Game {
     }
 
     this.trumpSetter = player.name;
-    this.setTrumpSuit(cards)
+    this.setTrumpSuit(cards);
   }
 
   forceSetTrumpSuit() {
@@ -265,21 +265,21 @@ class Game {
     this.notifyActionPlayer();
   }
 
-  setKitty(player, cards) {
+  setKitty(player, indexes) {
     const actionPlayer = this.pm.getN(this.actionIndex);
     if (player.name !== actionPlayer.name) {
       throw errors.ErrorCannotSetKitty;
     }
-    if (cards.length !== KITTY_CARDS) {
+    if (indexes.length !== KITTY_CARDS) {
       throw errors.ErrorInvalidNumberOfCardsForKitty;
     }
-    cards.map(c => new Card(c.rank, c.suit));
-    this.kitty = cards;
-    cards.forEach(c => this.pm.doN(this.actionIndex, player => player.popCard(c)));
-    this.pm.doN(this.actionIndex, player => player.sendHand());
+
+    this.kitty = player.getCards(indexes).map(c => new Card(c.rank, c.suit));
+    actionPlayer.removeCards(indexes);
 
     this.phase = PHASES[3];
     this.notifyPhaseChange();
+    actionPlayer.sendHand();
 
     this.notifyActionPlayer();
   }

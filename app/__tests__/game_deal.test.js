@@ -174,7 +174,7 @@ describe('game deal test', () => {
     const actionPlayer = g.getPlayer(actionPlayerName);
     expect(hands[actionPlayerName].length).toBe(18);
 
-    const kitty = hands[actionPlayerName].slice(12, 18);
+    const kitty = [12, 13, 14, 15, 16, 17];
     g.setKitty(actionPlayer, kitty);
     expect(hands[actionPlayerName].length).toBe(12);
   });

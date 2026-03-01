@@ -29,6 +29,10 @@ class Player {
     return indexes.map(i => this.hand[i]);
   }
 
+  removeCards(indexes) {
+    this.hand = this.hand.filter((c, i) => !indexes.includes(i));
+  }
+
   popCard(card) {
     return _.remove(this.hand, c => c.rank == card.rank && c.suit === card.suit);
   }

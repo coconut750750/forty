@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import CardGroup from 'components/CardGroup';
 import Hand from 'components/Hand';
@@ -7,91 +7,96 @@ var _ = require('lodash');
 
 const KITTY_SIZE = 6;
 
-class Kitty extends Component {
-  constructor(props) {
-    super(props);
+export default function Kitty({ socket, hand, mePlayer, children }) {
+  const [kittyActive, setKittyActive] = useState(false);
+  const [handIndexes, setHandIndexes] = useState([]);
+  const [kittyIndexes, setKittyIndexes] = useState([]);
 
-    this.state = {
-      kittyActive: false,
-      kitty: [],
-    };
-  }
-
-  componentDidMount() {
-    this.props.socket.on('action', data => {
-      this.setState({ kittyActive: true });
+  useEffect(() => {
+    socket.on('action', data => {
+      setKittyActive(true);
     });
+  }, [socket]);
+
+  useEffect(() => {
+    setHandIndexes(hand.map((c, i) => i));
+  }, [hand]);
+
+  const confirm = () => {
+    socket.emit('setKitty', { indexes: kittyIndexes });
   }
 
-  confirm() {
-    this.props.socket.emit('setKitty', { cards: this.state.kitty.map(c => c.json()) });
-  }
-
-  getHandWithoutKitty() {
-    var hand = _.cloneDeep(this.props.hand);
-    _.remove(hand, c => _.findIndex(this.state.kitty, k => c.equals(k)) >= 0);
-    if (this.state.kitty.length >= KITTY_SIZE) {
-      hand.map(c => {c.highlight = false; return c;});
+  const getHandWithoutKitty = () => {
+    let filteredHand = handIndexes.map(i => hand[i]);
+    if (kittyIndexes.length >= KITTY_SIZE) {
+      filteredHand.forEach(c => c?.setHighlight(false));
     } else {
-      hand.map(c => {c.highlight = true; return c;});
+      filteredHand.forEach(c => c?.setHighlight(true));
     }
-    return hand;
+    return filteredHand;
   }
 
-  addToKitty(c) {
-    var kitty = _.cloneDeep(this.state.kitty);
-    kitty.push(c);
-    this.setState({ kitty });
+  const getKitty = () => {
+    return kittyIndexes.map(i => hand[i]);
   }
 
-  removeFromKitty(c) {
-    var kitty = _.cloneDeep(this.state.kitty);
-    _.remove(kitty, k => c.equals(k));
-    this.setState({ kitty });
+  const addToKitty = (index) => {
+    const handIndex = handIndexes[index];
+    let newHandIndexes = [...handIndexes];
+    newHandIndexes.splice(index, 1);
+
+    setHandIndexes(newHandIndexes);
+    setKittyIndexes([...kittyIndexes, handIndex]);
   }
 
-  renderKitty(mePlayer) {
-    if (this.state.kittyActive) {
-      return [
-        <Hand
-          isActive
-          player={mePlayer}
-          cards={this.getHandWithoutKitty()}
-          click={ c => this.addToKitty(c) }/>,
-        <br/>,
-        <CardGroup
-          isActive
-          cards={this.state.kitty}
-          click={ c => this.removeFromKitty(c) }/>,
-        <br/>,
-        <button type="button" className="btn btn-light" 
-          onClick={ () => this.confirm() }
-          disabled={this.state.kitty.length !== KITTY_SIZE}>Confirm</button>,
-        <br/>,
-      ];
-    } else {
-      return [
-        <Hand
-          isActive
-          player={mePlayer}
-          cards={this.props.hand}/>,
-        <br/>,
-      ]
-    }
+  const removeFromKitty = (index) => {
+    const handIndex = kittyIndexes[index];
+    const newHandIndexes = _.sortBy([...handIndexes, handIndex]);
+
+    let newKittyIndexes = [...kittyIndexes];
+    newKittyIndexes.splice(index, 1);
+
+    setHandIndexes(newHandIndexes);
+    setKittyIndexes(newKittyIndexes);
   }
 
-  render() {
-    return (
-      <div>
-        <h5>Selecting 6 cards</h5>
+  const renderKitty = () => (
+    <>
+      <Hand
+        isActive
+        player={mePlayer}
+        cards={getHandWithoutKitty()}
+        click={ (c, index) => addToKitty(index) }/>
+      <br/>
+      <CardGroup
+        isActive
+        cards={getKitty()}
+        click={ (c, index) => removeFromKitty(index) }/>
+      <br/>
+      <button type="button" className="btn btn-light" 
+        onClick={ () => confirm() }
+        disabled={kittyIndexes.length !== KITTY_SIZE}>Confirm</button>
+      <br/>
+    </>
+  );
 
-        {this.props.children}
+  return (
+    <div>
+      <h5>Selecting 6 cards</h5>
 
-        {this.renderKitty(this.props.mePlayer)}
+      {children}
 
-      </div>
-    );
-  }
+      {kittyActive && renderKitty()}
+      {!kittyActive &&
+        <>
+          <Hand
+            isActive
+            player={mePlayer}
+            cards={hand}/>
+          <br/>
+        </>
+      }
+
+    </div>
+  );
 }
-
-export default Kitty;

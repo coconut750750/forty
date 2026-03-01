@@ -77,7 +77,7 @@ function socketio(socket, game, name, player) {
   });
 
   socket.on('setKitty', data => {
-    game.setKitty(player, data.cards);
+    game.setKitty(player, data.indexes);
     game.startTrick();
   });
 

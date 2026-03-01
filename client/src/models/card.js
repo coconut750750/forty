@@ -12,4 +12,8 @@ export default class Card {
   json() {
     return { rank: this.rank, suit: this.suit };
   }
+
+  setHighlight(highlight) {
+    this.highlight = highlight;
+  }
 }
