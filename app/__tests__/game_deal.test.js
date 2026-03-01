@@ -88,16 +88,18 @@ describe('game deal test', () => {
     while (legal.p1.includes(nonTrumpIndex)) {
       nonTrumpIndex--;
     }
-    expect(() => g.setTrumpSuit([hands.p1[nonTrumpIndex]], 'p1')).toThrow(errors.ErrorInvalidTrumpReveal);
+    expect(() => g.playerSetTrumpSuit(g.getPlayer('p1'), [nonTrumpIndex])).toThrow(errors.ErrorInvalidTrumpReveal);
 
     for (let p of order) {
       if (legal[p].length > 0) {
         let trumpIndex = legal[p][0];
         let card = hands[p][trumpIndex];
 
+        const player = g.getPlayer(p);
+
         // successfully set trump suit
         if (trumpBroadcast == undefined) {
-          g.setTrumpSuit([card], p);
+          g.playerSetTrumpSuit(player, [trumpIndex]);
           expect(g.trumpCard.rank).toBe('2');
           expect(g.trumpCard.suit).toBe(card.suit);
 
@@ -105,13 +107,13 @@ describe('game deal test', () => {
           expect(trumpBroadcast.card.rank).toBe('2');
           expect(trumpBroadcast.card.suit).toBe(card.suit);
         } else { // fail to set trump suit again
-          expect(() => g.setTrumpSuit([card], p)).toThrow(errors.ErrorInvalidTrumpReveal);
+          expect(() => g.playerSetTrumpSuit(player, [trumpIndex])).toThrow(errors.ErrorInvalidTrumpReveal);
         }
       }
     }
 
     // no need to force set trump
-    expect(() => g.forceSetTrump()).toThrow(errors.ErrorCannotForceSetTrump);
+    expect(() => g.forceSetTrumpSuit()).toThrow(errors.ErrorCannotForceSetTrumpSuit);
   });
 
   test('force reveal trump from kitty', () => {
@@ -138,7 +140,7 @@ describe('game deal test', () => {
       g.deal(actionPlayer);
     }
 
-    g.forceSetTrump();
+    g.forceSetTrumpSuit();
 
     expect(reveal.revealed.length >= 1).toBeTruthy();
     expect(g.trumpCard.rank).toBe('2');
@@ -147,7 +149,7 @@ describe('game deal test', () => {
     expect(trumpBroadcast.card.rank).toBe('2');
   });
 
-  test.only('correctly allow player to set kitty', () => {
+  test('correctly allow player to set kitty', () => {
     let hands = {p1: undefined, p2: undefined, p3: undefined, p4: undefined};
 
     const players = order.map(name => ({name, socket: {emit: (event, data) => {
@@ -166,7 +168,7 @@ describe('game deal test', () => {
       g.deal(actionPlayer);
     }
 
-    g.forceSetTrump();
+    g.forceSetTrumpSuit();
 
     const actionPlayerName = g.getActionPlayerName();
     const actionPlayer = g.getPlayer(actionPlayerName);

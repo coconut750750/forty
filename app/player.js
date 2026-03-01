@@ -25,6 +25,10 @@ class Player {
     this.sortHand();
   }
 
+  getCards(indexes) {
+    return indexes.map(i => this.hand[i]);
+  }
+
   popCard(card) {
     return _.remove(this.hand, c => c.rank == card.rank && c.suit === card.suit);
   }

@@ -201,16 +201,33 @@ class Game {
     return RANKS.charAt(this.level);
   }
 
-  setTrumpSuit(cards, name) {
+  playerSetTrumpSuit(player, indexes) {
     if (!this.canSetTrumpSuit()) {
       throw errors.ErrorInvalidTrumpReveal;
     }
+    let cards = player.getCards(indexes);
     for (let card of cards) {
       if (card.rank !== this.getTrumpRank()) {
         throw errors.ErrorInvalidTrumpReveal;
       }
     }
 
+    this.trumpSetter = player.name;
+    this.setTrumpSuit(cards)
+  }
+
+  forceSetTrumpSuit() {
+    if (this.trumpCard !== undefined) {
+      throw errors.ErrorCannotForceSetTrump;
+    }
+    const { card, revealed } = getTrumpFromKitty(this.deck, this.getTrumpRank());
+    this.kittyRevealed = revealed;
+    this.trumpSetter = "";
+    this.setTrumpSuit([card]);
+    this.notifyKittyRevealed();
+  }
+
+  setTrumpSuit(cards) {
     this.trumpCard = new Card(this.getTrumpRank(), cards[0].suit);
     this.trumpCard.calibrate(this.trumpCard);
     calibrate(this.deck, this.trumpCard);
@@ -219,7 +236,6 @@ class Game {
     this.pm.doAll(player => player.sortHand());
     this.pm.doAll(player => player.sendHand());
 
-    this.trumpSetter = name;
     this.notifyTrumpSet();
 
     if (this.dealsLeft === 0) {
@@ -233,16 +249,6 @@ class Game {
     }
     const rank = this.getTrumpRank();
     return { rank };
-  }
-
-  forceSetTrump() {
-    if (this.trumpCard !== undefined) {
-      throw errors.ErrorCannotForceSetTrump;
-    }
-    const { card, revealed } = getTrumpFromKitty(this.deck, this.getTrumpRank());
-    this.kittyRevealed = revealed;
-    this.setTrumpSuit([card], "");
-    this.notifyKittyRevealed();
   }
 
   startKitty() {

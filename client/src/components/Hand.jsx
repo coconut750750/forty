@@ -12,7 +12,7 @@ class Hand extends Component {
         <CardGroup
           isActive={this.props.isActive}
           cards={this.props.cards}
-          click={ c => this.props.click(c) }
+          click={ (c, index) => this.props.click(c, index) }
         />
       </div>
     );
