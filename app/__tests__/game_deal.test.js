@@ -146,4 +146,34 @@ describe('game deal test', () => {
     expect(trumpBroadcast.name).toBe('');
     expect(trumpBroadcast.card.rank).toBe('2');
   });
+
+  test.only('correctly allow player to set kitty', () => {
+    let hands = {p1: undefined, p2: undefined, p3: undefined, p4: undefined};
+
+    const players = order.map(name => ({name, socket: {emit: (event, data) => {
+        if (event === 'hand') {
+          hands[name] = data['hand'];
+        }
+      }}})
+    );
+
+    const g = startedGame(players, () => {}, { starting_level: 0 });
+    g.startRound();
+    g.startDeal();
+
+    while (g.dealsLeft > 0) {
+      let actionPlayer = g.getActionPlayerName();
+      g.deal(actionPlayer);
+    }
+
+    g.forceSetTrump();
+
+    const actionPlayerName = g.getActionPlayerName();
+    const actionPlayer = g.getPlayer(actionPlayerName);
+    expect(hands[actionPlayerName].length).toBe(18);
+
+    const kitty = hands[actionPlayerName].slice(12, 18);
+    g.setKitty(actionPlayer, kitty);
+    expect(hands[actionPlayerName].length).toBe(12);
+  });
 });

@@ -259,7 +259,14 @@ class Game {
     this.notifyActionPlayer();
   }
 
-  setKitty(cards) {
+  setKitty(player, cards) {
+    const actionPlayer = this.pm.getN(this.actionIndex);
+    if (player.name !== actionPlayer.name) {
+      throw errors.ErrorCannotSetKitty;
+    }
+    if (cards.length !== KITTY_CARDS) {
+      throw errors.ErrorInvalidNumberOfCardsForKitty;
+    }
     cards.map(c => new Card(c.rank, c.suit));
     this.kitty = cards;
     cards.forEach(c => this.pm.doN(this.actionIndex, player => player.popCard(c)));
